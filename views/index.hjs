@@ -64,7 +64,7 @@
                 <div class="panel panel-primary">
                   <div class="panel-heading">Widget 2</div>
                   <div class="panel-body">
-                    some other content
+                    <p id="test"></p>
                   </div>
                 </div>
               </div>
