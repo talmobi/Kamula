@@ -12,7 +12,7 @@ var mongodb = require("mongojs").connect(dataBaseUrl, collections);
 app = require('../app');
 
 app.get('/', function(req, res, next) {
-	res.render('index', {title: 'Awsome Title'});
+	res.render('index', {title: 'Kamula'});
 });
 
 
