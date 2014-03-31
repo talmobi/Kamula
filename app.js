@@ -15,7 +15,7 @@ var app = module.exports = express();
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs');
-app.use(express.favicon());
+app.use(express.favicon(path.join(__dirname, 'favicon.ico')));
 
 app.use(express.json());
 app.use(express.urlencoded());
@@ -32,6 +32,12 @@ if ('development' == app.get('env')) {
 
 //app.get('/', routes.index);
 //app.get('/users', user.list);
+
+//app.get('/', function(req, res, next) {
+	//res.send({text: 'heres some text' });
+	//res.render('index', {title: 'Title of App'});
+//});
+
 
 require('./routes');
 

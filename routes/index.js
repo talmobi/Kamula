@@ -9,8 +9,6 @@
 
 app = require('../app');
 
-app.get('/', function(req, res) {
-	res.send('home Test');
+app.get('/', function(req, res, next) {
+	res.render('index', {title: 'Awsome Title'});
 });
-
-require('./user');
