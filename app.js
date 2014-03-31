@@ -9,12 +9,6 @@ var path = require('path');
 
 var app = module.exports = express();
 
-// connect to remote database
-var dataBaseUrl = "mongodb://yoshi:kamula20140o9i8uy7u8i9@ds051077.mongolab.com:51077/misc";
-var collections = ["kamula"];
-
-mongodb = require("mongojs").connect(dataBaseUrl, collections);
-
 /*
 var MongoClient = require('mongodb').MongoClient;
 var format = require('util').format;
