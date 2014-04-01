@@ -136,26 +136,28 @@
         });
 
         // get latest tweets through api
-        var updateLatest = function() {
-            $.getJSON("/latest", function( data ) {
-            $.each( data, function( key, val) {
-              console.log(val);
-              var string = '<li class="media"> \
-                              <a class="pull-left" href="#"> \
-                                <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
-                              </a> \
-                              <div class="media-body"> \
-                                <h4 class="media-heading">'+val.from+'</h4> \
-                                '+val.message+' \
-                              </div> \
-                            </li>';
-              $(".tweetList").append( string );
-            });
-
-            $(".tweetList").show(1000);
+        $.getJSON("/latest", function( data ) {
+          $.each( data, function( key, val) {
+            console.log(val);
+            var string = '<li class="media"> \
+                            <a class="pull-left" href="#"> \
+                              <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
+                            </a> \
+                            <div class="media-body"> \
+                              <h4 class="media-heading">'+val.from+'</h4> \
+                              '+val.message+' \
+                            </div> \
+                          </li>';
+            $(".tweetList").append( string );
           });
-        }
-        updateLatest();
+
+          $(".tweetList").show(1000);
+        });
+
+
+        /*
+         *  socket.io
+         */
 
         var server = 'http://127.0.0.1:80';
         // connect with websocket to listen for real time updates
@@ -166,7 +168,7 @@
           }
         });
 
-        // test - update latest tweets when new tweet has arrived.
+        // update latest tweets when new tweet has arrived.
         socket.on('newtweet', function(data) {
             console.log("got my new tweet back: " + data.message);
             var string = '<li class="media" hidden="true"> \
@@ -185,7 +187,7 @@
             // keep at max 5 shown
             if ($(".tweetList li").length > 5) {
               var element = $(".tweetList li:last");
-              element.hide(1200);
+              element.hide(1200); // animate ftw
               setTimeout(function() {
                 element.remove();
               }, 1200);
