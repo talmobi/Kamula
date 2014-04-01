@@ -15,9 +15,10 @@
     <div id="page" class="bs mainPage">
 
       <!-- navbar containeri -->
-      <div class="container mainContainer">
+      <div class="container navContainer">
         <nav class="navbar navbar-inverse" role="navigation">
           <div class="container-fluid">
+
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
               <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -26,94 +27,133 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="#">{{ title }}</a>
+              <a class="navbar-brand" id="HomeLink" href="#">{{ title }}</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Link</a></li>
-                <li><a href="#">Link</a></li>
-                <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-                  <ul class="dropdown-menu">
-                    <li><a href="#">Action</a></li>
-                    <li><a href="#">Another action</a></li>
-                    <li><a href="#">Something else here</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">Separated link</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">One more separated link</a></li>
-                  </ul>
-                </li>
-              </ul>
-              <form class="navbar-form navbar-left" role="search">
-                <div class="form-group">
-                  <input type="text" class="form-control" placeholder="Search">
-                </div>
-                <button type="submit" class="btn btn-default">Submit</button>
-              </form>
-              <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">Link</a></li>
-                <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-                  <ul class="dropdown-menu">
-                    <li><a href="#">Action</a></li>
-                    <li><a href="#">Another action</a></li>
-                    <li><a href="#">Something else here</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">Separated link</a></li>
-                  </ul>
-                </li>
+                <li><a id="RegisterLink" href="#">Register</a></li>
+                <li><a id="LoginLink" href="#">Login</a></li>
               </ul>
             </div><!-- /.navbar-collapse -->
           </div><!-- /.container-fluid -->
         </nav>
       </div>
 
-      <div class="container">
+      <!-- main container -->
+      <div class="container mainContainer">
+
+        <!-- Anon view -->
+        <div class="anonView myView">
         <!-- list of users -->
-        <div id="users" class="col-sm-4">
-          <div class="panel panel-primary">
-            <div class="panel-heading">
-              <h3 class="panel-title">Käyttäjät</h3>
+          <div id="users" class="col-sm-4">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">Käyttäjät</h3>
+              </div>
+              <div class="panel-body">
+                <div class="list-group userList" id="userList" hidden="true">
+                  <!--<a href="#" class="list-group-item">Blinky</a> -->
+                  <!-- jqeury will add users here -->
+                </div>
+              </div>
             </div>
-            <div class="panel-body">
-              <div class="list-group userList" id="userList" hidden="true">
-                <!--<a href="#" class="list-group-item">Blinky</a> -->
-                <!-- jqeury will add users here -->
+          </div>
+
+          <!-- Recent tweets view -->
+          <div class="col-sm-8">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">Tuoreimmat Twiitit</h3>
+              </div>
+              <div class="panel-body">
+                <ul class="media-list tweetList" hidden="true">
+                  <!-- Sample twiitti, later to be added from db with jquery -->
+                </ul>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Recent tweets view -->
-        <div id="" class="col-sm-8">
-          <div class="panel panel-primary">
-            <div class="panel-heading">
-              <h3 class="panel-title">Tuoreimmat Twiitit</h3>
-            </div>
-            <div class="panel-body">
-              <ul class="media-list tweetList" hidden="true">
-                <!-- Sample twiitti, later to be added from db with jquery -->
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
 
-    <!--
-      <div class="col-sm-3">
-        <div class="panel panel-info">
-          <div class="panel-heading">
-            <h3 class="panel-title">Join</h3>
-          </div>
-          <div class="panel-body">
 
+        <!-- Register view -->
+        <div class="registerView myView" hidden>
+          <div class="col-sm-4"></div>
+
+          <div class="col-sm-4">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">Register</h3>
+              </div>
+              <div class="panel-body">
+                
+                <form class="input-group myForm">
+                  <label>
+                    <input type="text" class="form-control myInput" placeholder="Username"></input>
+                  </label><br>
+
+                  <label>
+                    <input type="text" class="form-control myInput" placeholder="email"></input>
+                  </label><br>
+
+                  <label>
+                    <input type="password" class="form-control myInput" placeholder="Password"></input>
+                  </label><br>
+
+                  <label>
+                    <button type="submit" class="btn btn-primary">
+                      Register
+                    </button>
+                  </label>
+                </form>
+                
+              </div>
+            </div>
           </div>
+
         </div>
-      </div>
-    -->
+
+
+        <!-- Login view -->
+        <div class="loginView myView" hidden>
+          <div class="col-sm-4"></div>
+
+          <div class="col-sm-4">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">Login</h3>
+              </div>
+              <div class="panel-body">
+                
+                <form class="input-group myForm">
+                  <label>
+                    <input type="text" class="form-control myInput" placeholder="Username"></input>
+                  </label><br>
+
+                  <label>
+                    <input type="text" class="form-control myInput" placeholder="email"></input>
+                  </label><br>
+                  
+                  <label>
+                    <input type="password" class="form-control myInput" placeholder="Password"></input>
+                  </label><br>
+
+                  <label>
+                    <button type="submit" class="btn btn-primary">
+                      Login
+                    </button>
+                  </label>
+                </form>
+                
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+
 
     </div>
 
@@ -125,39 +165,28 @@
     <!-- grab socket.io.js library from server -->
     <script src="/socket.io/socket.io.js"></script>
 
+    <script src="/javascripts/kamulaClient.js"></script>
+
     <script type="text/javascript">
       $(function() {
 
-        // get users list through api
-        $.getJSON("/users", function( data ) {
-          $.each( data, function( key, val) {
-            console.log(val);
-            var string = '<a href="#" class="list-group-item">'+val.name+'</a>';
-            $(".userList").append( string );
-          });
+        switchToAnonView();
 
-          $(".userList").show(1000);
+        $("#RegisterLink").click( function() {
+          switchToRegisterView();
         });
 
-        // get latest tweets through api
-        $.getJSON("/latest", function( data ) {
-          $.each( data, function( key, val) {
-            console.log(val);
-            var string = '<li class="media"> \
-                            <a class="pull-left" href="#"> \
-                              <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
-                            </a> \
-                            <div class="media-body"> \
-                              <h4 class="media-heading">'+val.from+'</h4> \
-                              '+val.message+' \
-                            </div> \
-                          </li>';
-            $(".tweetList").append( string );
-          });
-
-          $(".tweetList").show(1000);
+        $("#LoginLink").click( function() {
+          switchToLoginView();
         });
 
+        $("#HomeLink").click( function() {
+          switchToHomeView()
+        });
+
+        
+
+       
 
         /*
          *  socket.io
