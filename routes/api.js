@@ -16,6 +16,7 @@ app = require('../app'); // require express app
 // POST requests
 app.post('/register', function(req, res) {
 	console.log(req);
+	res.send('200');
 });
 
 
@@ -37,6 +38,7 @@ app.get('/latest', function(req, res) {
 		res.send(data);
 	});
 });
+
 
 
 // Views

@@ -91,19 +91,19 @@
                 
                 <form class="input-group myForm">
                   <label>
-                    <input type="text" class="form-control myInput" placeholder="Username"></input>
+                    <input type="text" class="form-control myInput myUsernameInput" placeholder="Username"></input>
                   </label><br>
 
                   <label>
-                    <input type="text" class="form-control myInput" placeholder="email"></input>
+                    <input type="text" class="form-control myInput myEmailInput" placeholder="email"></input>
                   </label><br>
 
                   <label>
-                    <input type="password" class="form-control myInput" placeholder="Password"></input>
+                    <input type="password" class="form-control myInput myPasswordInput" placeholder="Password"></input>
                   </label><br>
 
                   <label>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary registerButton">
                       Register
                     </button>
                   </label>
@@ -129,19 +129,19 @@
                 
                 <form class="input-group myForm">
                   <label>
-                    <input type="text" class="form-control myInput" placeholder="Username"></input>
+                    <input type="text" class="form-control myInput myUsernameInput" placeholder="Username"></input>
                   </label><br>
 
                   <label>
-                    <input type="text" class="form-control myInput" placeholder="email"></input>
+                    <input type="text" class="form-control myInput myEmailInput" placeholder="email"></input>
                   </label><br>
                   
                   <label>
-                    <input type="password" class="form-control myInput" placeholder="Password"></input>
+                    <input type="password" class="form-control myInput myPasswordInput" placeholder="Password"></input>
                   </label><br>
 
                   <label>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary loginButton">
                       Login
                     </button>
                   </label>
@@ -185,7 +185,7 @@
         });
 
         
-
+        init();
        
 
         /*

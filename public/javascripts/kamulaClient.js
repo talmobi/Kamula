@@ -1,4 +1,4 @@
-// jquery and build the anon page
+// adds dynamic jquery functionality to the client side page
 
 hideAllViews = function() {
   $(".myView").hide();
@@ -7,6 +7,33 @@ hideAllViews = function() {
 switchToHomeView = function() {
   hideAllViews();
   $(".anonView").show();
+}
+
+// initialize jquery API funcitonality
+// for buttons etc
+init = function() {
+
+  
+  $(".loginButton").click( function() {
+      alert("sent");
+
+    var jqhxr = $.post( "/register", function() {
+      alert("success");
+    })
+    .done(function() {
+      alert("second success");
+    })
+    .fail(function() {
+      alert("error");
+    })
+    .always(function() {
+      alert("finished");
+    })
+  });
+
+  $(".registerButton").click( function() {
+    
+  });
 }
 
 switchToAnonView = function() {
