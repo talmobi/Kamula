@@ -12,10 +12,10 @@
   <body>
 
     <!-- main page container -->
-    <div id="page" class="bs">
+    <div id="page" class="bs mainPage">
 
       <!-- navbar containeri -->
-      <div class="container">
+      <div class="container mainContainer">
         <nav class="navbar navbar-inverse" role="navigation">
           <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -71,35 +71,38 @@
         </nav>
       </div>
 
-      <!-- list of users -->
-      <div id="users" class="col-sm-3">
-        <div class="panel panel-primary">
-          <div class="panel-heading">
-            <h3 class="panel-title">Käyttäjät</h3>
+      <div class="container">
+        <!-- list of users -->
+        <div id="users" class="col-sm-4">
+          <div class="panel panel-primary">
+            <div class="panel-heading">
+              <h3 class="panel-title">Käyttäjät</h3>
+            </div>
+            <div class="panel-body">
+              <div class="list-group userList" id="userList" hidden="true">
+                <!--<a href="#" class="list-group-item">Blinky</a> -->
+                <!-- jqeury will add users here -->
+              </div>
+            </div>
           </div>
-          <div class="panel-body">
-            <div class="list-group userList" id="userList" hidden="true">
-              <!--<a href="#" class="list-group-item">Blinky</a> -->
-              <!-- jqeury will add users here -->
+        </div>
+
+        <!-- Recent tweets view -->
+        <div id="" class="col-sm-8">
+          <div class="panel panel-primary">
+            <div class="panel-heading">
+              <h3 class="panel-title">Tuoreimmat Twiitit</h3>
+            </div>
+            <div class="panel-body">
+              <ul class="media-list tweetList" hidden="true">
+                <!-- Sample twiitti, later to be added from db with jquery -->
+              </ul>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Recent tweets view -->
-      <div id="" class="col-sm-6">
-        <div class="panel panel-primary">
-          <div class="panel-heading">
-            <h3 class="panel-title">Tuoreimmat Twiitit</h3>
-          </div>
-          <div class="panel-body">
-            <ul class="media-list tweetList" hidden="true">
-              <!-- Sample twiitti, later to be added from db with jquery -->
-            </ul>
-          </div>
-        </div>
-      </div>
-
+    <!--
       <div class="col-sm-3">
         <div class="panel panel-info">
           <div class="panel-heading">
@@ -110,6 +113,7 @@
           </div>
         </div>
       </div>
+    -->
 
     </div>
 
@@ -170,29 +174,29 @@
 
         // update latest tweets when new tweet has arrived.
         socket.on('newtweet', function(data) {
-            console.log("got my new tweet back: " + data.message);
-            var string = '<li class="media" hidden="true"> \
-                              <a class="pull-left" href="#"> \
-                                <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
-                              </a> \
-                              <div class="media-body"> \
-                                <h4 class="media-heading">'+data.from+'</h4> \
-                                '+data.message+' \
-                              </div> \
-                            </li>';
-            $(".tweetList").prepend(string);
-            // animate it a little bit
-            $(".tweetList li").first().hide().show(600);
+          console.log("got my new tweet back: " + data.message);
+          var string = '<li class="media" hidden="true"> \
+                            <a class="pull-left" href="#"> \
+                              <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
+                            </a> \
+                            <div class="media-body"> \
+                              <h4 class="media-heading">'+data.from+'</h4> \
+                              '+data.message+' \
+                            </div> \
+                          </li>';
+          $(".tweetList").prepend(string);
+          // animate it a little bit
+          $(".tweetList li").first().hide().show(600);
 
-            // keep at max 5 shown
-            if ($(".tweetList li").length > 5) {
-              var element = $(".tweetList li:last");
-              element.hide(1200); // animate ftw
-              setTimeout(function() {
-                element.remove();
-              }, 1200);
-            }
-          });
+          // keep at max 5 shown
+          if ($(".tweetList li").length > 5) {
+            var element = $(".tweetList li:last");
+            element.hide(1200); // animate ftw
+            setTimeout(function() {
+              element.remove();
+            }, 1200);
+          }
+        });
 
         // $("#userList").hide(300).show(1000).slideUp(1000).slideDown(1000);
       });

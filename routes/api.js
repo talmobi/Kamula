@@ -12,8 +12,6 @@ var collection = mongodb.kamula;
 app = require('../app'); // require express app
 
 
-
-
 // API
 // POST requests
 app.post('/register', function(req, res) {
@@ -42,7 +40,15 @@ app.get('/latest', function(req, res) {
 
 
 
-// routing
+// Views
+app.get('/register', function(req, res) {
+	res.render('register');
+});
+
+app.get('/login', function(req, res) {
+	res.render('login');
+});
+
 app.get('/', function(req, res) {
 	res.render('index', {title: 'Kamula'});
 });

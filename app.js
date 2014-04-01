@@ -18,6 +18,7 @@ app.use(express.favicon(path.join(__dirname, 'favicon.ico')));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
+
 app.use(app.router);
 app.use(require('less-middleware')({ src: path.join(__dirname, 'public') }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -28,11 +29,10 @@ if ('development' == app.get('env')) {
   app.use(express.logger('dev'));
 }
 
-// app specific scripts
-require('./routes/index');
-
-var httpServ = module.exports = http.createServer(app).listen(app.get('port'), function(){
+app.httpServ = http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
 
-require('./routes/realtime');
+// app specific scripts
+require('./routes/api');
+require('./routes/sockets');
