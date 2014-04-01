@@ -9,22 +9,8 @@ var path = require('path');
 
 var app = module.exports = express();
 
-/*
-var MongoClient = require('mongodb').MongoClient;
-var format = require('util').format;
-
-MongoClient.connect('mongodb://127.0.0.1:27017/misc', function(err, db) {
-	if (err) throw err;
-
-	var collection = db.collection('kamula');
-
-	collection.find().
-
-});
-*/
-
 // all environments
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 80);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs');
 app.use(express.favicon(path.join(__dirname, 'favicon.ico')));
@@ -42,8 +28,11 @@ if ('development' == app.get('env')) {
   app.use(express.logger('dev'));
 }
 
-require('./routes');
+// app specific scripts
+require('./routes/index');
 
-http.createServer(app).listen(app.get('port'), function(){
+var httpServ = module.exports = http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+
+require('./routes/realtime');
