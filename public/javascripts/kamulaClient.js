@@ -9,21 +9,28 @@ switchToHomeView = function() {
   $(".anonView").show();
 }
 
+
+// get register/login data from form
+var getFormData = function(view) {
+  var data = {
+      username: $(view + " .myUsernameInput").val(),
+      email: $(view + " .myEmailInput").val(),
+      password: $(view + " .myPasswordInput").val()
+    };
+
+    return data;
+}
+
 // initialize jquery API funcitonality
 // for buttons etc
 init = function() {
 
+    $(".loginButton").click( function() {
+    var data = getFormData(".loginView");
+  
+    alert( JSON.stringify(data));
 
-  $(".loginButton").click( function() {
-    var data = {
-      username: $(".loginView .myUsernameInput").val(),
-      email: $(".loginView .myEmailInput").val(),
-      password: $(".loginView .myPasswordInput").val()
-    };
-
-    alert( JSON.stringify(data) );
-
-    // handle the request
+  // handle the request
     var jqhxr = $.post( "/login", function(data) {
       alert("success");
     })
@@ -39,16 +46,12 @@ init = function() {
   });
 
   $(".registerButton").click( function() {
-    var data = {};
-    //data.mtype = "register";
-    data.username = $(".registerView myUsernameInput").val();
-    data.email = $(".registerView myEmailInput").val();
-    data.password = $(".registerView myPasswordInput").val();
+    var data = getFormData(".registerView");
 
     alert( JSON.stringify(data) );
 
     // handle the request
-    var jqhxr = $.post( "/register", function() {
+    var jqhxr = $.post( "/register", function(data) {
       alert("success");
     })
     .done(function() {
@@ -61,6 +64,7 @@ init = function() {
       alert("finished");
     })
   });
+
 }
 
 switchToAnonView = function() {
