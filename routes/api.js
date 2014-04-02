@@ -19,6 +19,11 @@ app.post('/register', function(req, res) {
 	res.send('200');
 });
 
+app.post('/login', function(req, res) {
+	console.log(req);
+	res.send('200');
+});
+
 
 // GET requests
 app.get('/find', function(req, res) {

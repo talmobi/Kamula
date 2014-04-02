@@ -13,11 +13,18 @@ switchToHomeView = function() {
 // for buttons etc
 init = function() {
 
-  
-  $(".loginButton").click( function() {
-      alert("sent");
 
-    var jqhxr = $.post( "/register", function() {
+  $(".loginButton").click( function() {
+    var data = {
+      username: $(".loginView .myUsernameInput").val(),
+      email: $("loginView .myEmailInput").val(),
+      password: $(".loginView .myPasswprdInput").val()
+    };
+
+    alert( JSON.stringify(data) );
+
+    // handle the request
+    var jqhxr = $.post( "/login", function(data) {
       alert("success");
     })
     .done(function() {
@@ -32,7 +39,27 @@ init = function() {
   });
 
   $(".registerButton").click( function() {
-    
+    var data = {};
+    //data.mtype = "register";
+    data.username = $(".registerView myUsernameInput").val();
+    data.email = $(".registerView myEmailInput").val();
+    data.password = $(".registerView myPasswprdInput").val();
+
+    alert( JSON.stringify(data) );
+
+    // handle the request
+    var jqhxr = $.post( "/register", function() {
+      alert("success");
+    })
+    .done(function() {
+      alert("second success");
+    })
+    .fail(function() {
+      alert("error");
+    })
+    .always(function() {
+      alert("finished");
+    })
   });
 }
 
