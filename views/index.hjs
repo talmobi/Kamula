@@ -45,7 +45,7 @@
       <div class="container mainContainer">
 
         <!-- Anon view -->
-        <div class="anonView myView">
+        <div class="anonView myView HOME">
         <!-- list of users -->
           <div id="users" class="col-sm-4">
             <div class="panel panel-primary">
@@ -79,7 +79,7 @@
 
 
         <!-- Register view -->
-        <div class="registerView myView" hidden>
+        <div class="registerView myView REG" hidden>
           <div class="col-sm-4"></div>
 
           <div class="col-sm-4">
@@ -117,7 +117,7 @@
 
 
         <!-- Login view -->
-        <div class="loginView myView" hidden>
+        <div class="loginView myView LOG" hidden>
           <div class="col-sm-4"></div>
 
           <div class="col-sm-4">

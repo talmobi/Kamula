@@ -1,12 +1,43 @@
 // adds dynamic jquery functionality to the client side page
 
+var slideTime = 600;
+
+var StateEnum = {
+  HOME: "HOME",
+  REG: "REG",
+  LOG: "LOG"
+};
+
+var state = StateEnum.HOME;
+
 hideAllViews = function() {
-  $(".myView").hide();
+  $(".myView").hide(slideTime);
+}
+
+switchTo = function(view) {
+  console.log("In SwitchTo");
+
+  if (typeof view === "string") {
+    console.log("Correct typeof");
+
+    state = view;
+
+    for (var v in StateEnum) {
+      console.log(v);
+      if (v !== view) {
+        console.log(".myView." + v);
+        $(".myView." + v).slideUp(slideTime);
+      } else {
+        $(".myView." + v).show(slideTime);
+      }
+    }
+
+    //$("myView." + view).show(slideTime);
+  }
 }
 
 switchToHomeView = function() {
-  hideAllViews();
-  $(".anonView").show();
+  switchTo(StateEnum.HOME);
 }
 
 
@@ -76,7 +107,8 @@ switchToAnonView = function() {
       $(".userList").append( string );
     });
 
-    $(".userList").show(1000);
+    $(".userList").show(slideTime
+);
   });
 
   // get latest tweets through api
@@ -95,16 +127,15 @@ switchToAnonView = function() {
       $(".tweetList").append( string );
     });
 
-    $(".tweetList").show(1000);
+    $(".tweetList").show(slideTime
+);
   });
 }
 
 switchToRegisterView = function() {
-  hideAllViews();
-  $(".registerView").show();
+  switchTo(StateEnum.REG);
 }
 
 switchToLoginView = function() {
-  hideAllViews();
-  $(".loginView").show();
+  switchTo(StateEnum.LOG);
 }
