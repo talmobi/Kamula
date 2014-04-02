@@ -17,8 +17,8 @@ init = function() {
   $(".loginButton").click( function() {
     var data = {
       username: $(".loginView .myUsernameInput").val(),
-      email: $("loginView .myEmailInput").val(),
-      password: $(".loginView .myPasswprdInput").val()
+      email: $(".loginView .myEmailInput").val(),
+      password: $(".loginView .myPasswordInput").val()
     };
 
     alert( JSON.stringify(data) );
@@ -43,7 +43,7 @@ init = function() {
     //data.mtype = "register";
     data.username = $(".registerView myUsernameInput").val();
     data.email = $(".registerView myEmailInput").val();
-    data.password = $(".registerView myPasswprdInput").val();
+    data.password = $(".registerView myPasswordInput").val();
 
     alert( JSON.stringify(data) );
 
