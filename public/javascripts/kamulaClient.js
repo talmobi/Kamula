@@ -56,12 +56,26 @@ var getFormData = function(view) {
 // for buttons etc
 init = function() {
 
-    $(".loginButton").click( function() {
+  // init buttons
+  $("#RegisterLink").click( function() {
+    switchToRegisterView();
+  });
+
+  $("#LoginLink").click( function() {
+    switchToLoginView();
+  });
+
+  $("#HomeLink").click( function() {
+    switchToHomeView()
+  });
+
+  // login button pressed
+  $(".loginButton").click( function() {
     var data = getFormData(".loginView");
   
     alert( JSON.stringify(data));
 
-  // handle the request
+    // handle the request
     var jqhxr = $.post( "/login", function(data) {
       alert("success");
     })
@@ -76,6 +90,7 @@ init = function() {
     })
   });
 
+  // register button pressed
   $(".registerButton").click( function() {
     var data = getFormData(".registerView");
 
@@ -98,7 +113,8 @@ init = function() {
 
 }
 
-switchToAnonView = function() {
+// gets the initial data for the home page
+pageInit = function() {
   // get users list through api
   $.getJSON("/users", function( data ) {
     $.each( data, function( key, val) {
@@ -107,8 +123,7 @@ switchToAnonView = function() {
       $(".userList").append( string );
     });
 
-    $(".userList").show(slideTime
-);
+    $(".userList").show(slideTime);
   });
 
   // get latest tweets through api
@@ -128,7 +143,7 @@ switchToAnonView = function() {
     });
 
     $(".tweetList").show(slideTime
-);
+    );
   });
 }
 

@@ -170,26 +170,15 @@
     <script type="text/javascript">
       $(function() {
 
-        switchToAnonView();
+        // init home page
+        pageInit();
 
-        $("#RegisterLink").click( function() {
-          switchToRegisterView();
-        });
-
-        $("#LoginLink").click( function() {
-          switchToLoginView();
-        });
-
-        $("#HomeLink").click( function() {
-          switchToHomeView()
-        });
-
-        
+        // init functionality
         init();
        
 
         /*
-         *  socket.io
+         *  socket.io - for real time updates (tweets etc)
          */
 
         var server = 'http://127.0.0.1:80';
@@ -227,7 +216,6 @@
           }
         });
 
-        // $("#userList").hide(300).show(1000).slideUp(1000).slideDown(1000);
       });
     </script>
 
