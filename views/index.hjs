@@ -230,7 +230,7 @@
         socket.on('newuser', function(data) {
           console.log("new user registered: " + (data.name || data.username) );
           
-          var str = '<a href="#" class="list-group-item">'+ (data.name || data.username) +'</a>';
+          var str = '<a href="#" class="list-group-item">'+ (data.name || data.user) +'</a>';
           $(".userList").prepend( str + '<br>');
           var e = $(".userList .list-group-item").first();
           e.hide().show(600);

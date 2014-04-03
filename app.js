@@ -33,6 +33,9 @@ app.httpServ = http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
 
+// init models for mongoose & mongodb etc
+require('./routes/models')
+
 // init serverside scripts
 require('./routes/api');
 require('./routes/sockets');

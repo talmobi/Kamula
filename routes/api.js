@@ -12,18 +12,9 @@ var nameExcludePattern = /[^a-zA-Z0-9]+/;
 var maxTweetLength = 200;
 
 
-// set up mongoDB
-// read auth info syncly from file (.gitignored)
-var dataBaseUrl = require('fs').readFileSync('./mongodb_auth', 'utf8');
-// connect to the remote database
-var mongodb = module.exports = require("mongojs").connect(dataBaseUrl, ["kamula"]);
-// set handle for the database
-var collection = mongodb.kamula;
-
-app = require('../app'); // require express app
-
-// acquire them sexy shlockets!~~
-var io = require('./sockets');
+var mongoose = require('mongoose');
+var app = require('../app'); // require express app
+var io = require('./sockets'); // acquire them sexy shlockets!~~
 
 // http status codes
 // 400 - client side error
@@ -34,24 +25,26 @@ var io = require('./sockets');
 var addNewUser = function(json) {
 	// add necessary user values to the data
 	// acquired from the client
-	var userData = {
+	var User = mongoose.model('User');
+	var userData = new User( {
 		user: json.user,
 		name: json.name,
 		email: json.email,
 		password: json.password,
 		
-		type: "user",
 		lowercaseName: json.user.toLowerCase(),
-	}
+	});
 
 	// save the user to mongodb
-	collection.save( userData );
+	userData.save(function(err) {
+		if (err) throw err;
 
-	// delete password before sending the user data
-	delete userData.password;
-
-	// broadcast changes to all connected clients
-	io.sockets.emit('newuser', userData);
+		// delete password before sending the user data
+		delete userData.password;
+		
+		// broadcast changes to all connected clients
+		io.sockets.emit('newuser', userData);
+	});
 }
 
 
@@ -59,23 +52,31 @@ var verify = function(req, user) {
 	return true;
 }
 
+var nameIsOk = function(name) {
+	if (typeof name !== 'string') {
+		return false;
+	}
+	if ((name.length > maxNameLength) || nameExcludePattern.test(name)) {
+		return false;
+	}
+	return true;
+}
+
 var register = function(req, res) {
 	var json = req.body;
 	var name = json.user;
 
-	if (name.length > maxNameLength) {
-		res.send( 400, { message: "Username too long!", errorSource: "myUsername" } ); // error
-	} else if (nameExcludePattern.test(name)) {
-		res.send( 400, { message: "Username must consist of a-z, A-Z and 0-9 characters only!",
-										 errorSource: "myUsername" } );
+	if (!nameIsOk(name)) {
+		res.send( 400, { message: "Username faulty!", errorSource: "myUsername" } );
 	} else {	// username is fine
 		// check if username already exists
-		collection.findOne({ type: "user", lowercaseName: name.toLowerCase() }, function(err, doc) {
+
+		mongoose.model('User').count( {lowercaseName: name.toLowerCase() }, function(err, count) {
 			if (err) throw err;
 
-			console.log(doc);
+			console.log(count);
 
-			if (doc) { // exists
+			if (count > 0) { // exists
 				res.send( 403, { message: "That Username already exists.", errorSource: "myUsername" } );
 			} else {	// doesn't exists
 				console.log("REGISTERED NEW USER");
@@ -204,22 +205,39 @@ app.get('/find', function(req, res) {
 app.get('/users', function(req, res) {
 	var criteria = {type: 'user'};
 	var projection = {
-		_id: false,
-		password: false,
-		lowercaseName: false,
-		type: false
+		user: true,
+		name: true,
+		email: true
 	};
 
+	
+	mongoose.model('User').find( {}, projection ).sort({_id: -1}).exec(function(err, users) {
+		if (err) throw err;
+		res.send(users);
+	});
+
+/*
 	// sort newest first
 	collection.find( criteria, projection).sort({_id: -1}, function(err, data) {
 		res.send(data);
 	});
+*/
 });
 
 app.get('/latest', function(req, res) {
+	var projection = {
+
+	};
+
+	mongoose.model('Tweet').find({}, projection).sort({_id: -1}).limit(5).exec(function(err, tweets) {
+		if (err) throw err;
+		res.send(tweets);
+	});
+
+/*
 	collection.find({type: "tweet"}).sort({_id: -1}).limit( 5, function(err, data) {
 		res.send(data);
-	});
+	});*/
 });
 
 
