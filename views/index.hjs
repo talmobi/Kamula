@@ -54,8 +54,10 @@
               </div>
               <div class="panel-body">
                 <div class="list-group userList" id="userList" hidden="true">
+
                   <!--<a href="#" class="list-group-item">Blinky</a> -->
                   <!-- jqeury will add users here -->
+
                 </div>
               </div>
             </div>
@@ -97,8 +99,8 @@
                   </label>
 
                   <label>
-                    <div class="form-group has-feedback myName">
-                      <input type="text" class="form-control myInput myNameInput" placeholder="Full Name">
+                    <div class="form-group has-feedback myFullName">
+                      <input type="text" class="form-control myInput myFullNameInput" placeholder="Full Name">
                     </div>
                   </label>
 
@@ -222,6 +224,16 @@
               element.remove();
             }, 1200);
           }
+        });
+
+        // update user list if a new user has registered
+        socket.on('newuser', function(data) {
+          console.log("new user registered: " + (data.name || data.username) );
+          
+          var str = '<a href="#" class="list-group-item">'+ (data.name || data.username) +'</a>';
+          $(".userList").prepend( str + '<br>');
+          var e = $(".userList .list-group-item").first();
+          e.hide().show(600);
         });
 
       });

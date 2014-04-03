@@ -6,5 +6,7 @@ body {
 	background: #222;
 }
 
-.myInput {
+#userList .list-group-item {
+	display: inline-block;
+	width: 100%;
 }

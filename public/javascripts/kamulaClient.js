@@ -16,25 +16,19 @@ hideAllViews = function() {
 }
 
 switchTo = function(view) {
-  console.log("In SwitchTo");
 
   if (typeof view === "string") {
-    console.log("Correct typeof");
 
     state = view;
 
     // hide other views, show current view
     for (var v in StateEnum) {
-      console.log(v);
       if (v !== view) { // hide this view
-        console.log(".myView." + v);
         $(".myView." + v).slideUp(slideTime);
       } else {  // show this view
         $(".myView." + v).show(slideTime);
       }
     }
-
-    //$("myView." + view).show(slideTime);
   }
 }
 
@@ -44,7 +38,8 @@ switchTo = function(view) {
 // get register/login data from form
 var getFormData = function(view) {
   var data = {
-      username: $(view + " .myUsernameInput").val(),
+      user: $(view + " .myUsernameInput").val(),
+      name: $(view + " .myFullNameInput").val(),
       email: $(view + " .myEmailInput").val(),
       password: $(view + " .myPasswordInput").val()
     };
@@ -91,7 +86,6 @@ init = function() {
     // handle the request
     var jqhxr = $.post( "/login", dataOut, function( data ) {
       console.log( JSON.stringify(data) )
-
     })
     .done(function() {
 
@@ -113,7 +107,6 @@ init = function() {
     // handle the request
     var jqhxr = $.post( "/register", dataOut, function( data ) {
       console.log( JSON.stringify(data) )
-
     })
     .done(function() {
 
@@ -134,8 +127,8 @@ pageInit = function() {
   $.getJSON("/users", function( data ) {
     $.each( data, function( key, val) {
       console.log(val);
-      var string = '<a href="#" class="list-group-item">'+val.name+'</a>';
-      $(".userList").append( string );
+      var str = '<a href="#" class="list-group-item">'+ (val.name || val.user) +'</a>';
+      $(".userList").append( str + '<br>');
     });
 
     $(".userList").show(slideTime);
@@ -144,7 +137,7 @@ pageInit = function() {
   // get latest tweets through api
   $.getJSON("/latest", function( data ) {
     $.each( data, function( key, val) {
-      console.log(val);
+      //console.log(val);
       var string = '<li class="media"> \
                       <a class="pull-left" href="#"> \
                         <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
@@ -157,8 +150,7 @@ pageInit = function() {
       $(".tweetList").append( string );
     });
 
-    $(".tweetList").show(slideTime
-    );
+    $(".tweetList").show(slideTime);
   });
 }
 
