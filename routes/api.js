@@ -12,11 +12,14 @@ var nameExcludePattern = /[^a-zA-Z0-9]+/;
 var maxTweetLength = 200;
 
 
-
-// connect to remote database
-var dataBaseUrl = "mongodb://yoshi:kamula20140o9i8uy7u8i9@ds051077.mongolab.com:51077/misc";
-var collections = ["kamula"];
-var mongodb = module.exports = require("mongojs").connect(dataBaseUrl, collections);
+// set up mongoDB
+// read url with auth info from file (.gitignored)
+var fs = require('fs');
+// read is synchronizly (we need this info NOW)
+var dataBaseUrl = fs.readFileSync('./mongodb_auth', 'utf8');
+// connect to the remote database
+var mongodb = module.exports = require("mongojs").connect(dataBaseUrl, ["kamula"]);
+// set handle for the database
 var collection = mongodb.kamula;
 
 app = require('../app'); // require express app
@@ -28,9 +31,12 @@ app = require('../app'); // require express app
 
 // Server side functions
 var saveUser = function(user) {
+	// add necessary user values to the data
+	// acquired from the client
 	user.lowercaseName = user.username.toLowerCase();
 	user.type = "user";
 
+	// save the user to mongodb
 	collection.save( user );
 }
 
@@ -46,15 +52,13 @@ app.post('/register', function(req, res) {
 		res.send( 400, { message: "Username too long!", errorSource: "myUsername" } ); // error
 	} else if (nameExcludePattern.test(name)) {
 		res.send( 400, { message: "Username must consist of a-z, A-Z and 0-9 characters only!", errorSource: "myUsername" } ); // error
-	} else {
-		// username is fine
+	} else {	// username is fine
 		// check if username already exists
-
 		collection.findOne({ type: "user", lowercaseName: name.toLowerCase() }, function(err, doc) {
 			console.log(doc);
 
 			if (doc) { // exists
-				res.send( 500, { message: "Username already exists.", errorSource: "myUsername" } );
+				res.send( 500, { message: "That Username already exists.", errorSource: "myUsername" } );
 			} else {	// doesn't exists
 				console.log("REGISTERED NEW USER");
 				saveUser(data);
