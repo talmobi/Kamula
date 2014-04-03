@@ -10,6 +10,7 @@ var StateEnum = {
 
 var state = StateEnum.HOME;
 
+// deprecated
 hideAllViews = function() {
   $(".myView").hide(slideTime);
 }
@@ -22,12 +23,13 @@ switchTo = function(view) {
 
     state = view;
 
+    // hide other views, show current view
     for (var v in StateEnum) {
       console.log(v);
-      if (v !== view) {
+      if (v !== view) { // hide this view
         console.log(".myView." + v);
         $(".myView." + v).slideUp(slideTime);
-      } else {
+      } else {  // show this view
         $(".myView." + v).show(slideTime);
       }
     }
@@ -36,9 +38,7 @@ switchTo = function(view) {
   }
 }
 
-switchToHomeView = function() {
-  switchTo(StateEnum.HOME);
-}
+
 
 
 // get register/login data from form
@@ -50,6 +50,19 @@ var getFormData = function(view) {
     };
 
     return data;
+}
+
+var formFail = function(data) {
+  var json = data.responseJSON;
+
+  console.log(json.errorSource);
+  console.log(json.message);
+
+  var element = $('.' + state + ' .' + json.errorSource);
+  element.toggleClass("has-error", true);
+  setTimeout(function() {
+    element.toggleClass("has-error", false);
+  }, 3000);
 }
 
 // initialize jquery API funcitonality
@@ -71,43 +84,45 @@ init = function() {
 
   // login button pressed
   $(".loginButton").click( function() {
-    var data = getFormData(".loginView");
+    var dataOut = getFormData(".loginView");
   
-    alert( JSON.stringify(data));
+    alert( JSON.stringify(dataOut));
 
     // handle the request
-    var jqhxr = $.post( "/login", function(data) {
-      alert("success");
+    var jqhxr = $.post( "/login", dataOut, function( data ) {
+      console.log( JSON.stringify(data) )
+
     })
     .done(function() {
-      alert("second success");
+
     })
-    .fail(function() {
-      alert("error");
+    .fail(function(data) {
+      formFail(data);
     })
     .always(function() {
-      alert("finished");
+
     })
   });
 
   // register button pressed
   $(".registerButton").click( function() {
-    var data = getFormData(".registerView");
+    var dataOut = getFormData(".registerView");
 
-    alert( JSON.stringify(data) );
+    console.log( JSON.stringify(dataOut) );
 
     // handle the request
-    var jqhxr = $.post( "/register", function(data) {
-      alert("success");
+    var jqhxr = $.post( "/register", dataOut, function( data ) {
+      console.log( JSON.stringify(data) )
+
     })
     .done(function() {
-      alert("second success");
+
     })
-    .fail(function() {
-      alert("error");
+    .fail(function(data) {
+      formFail(data);
     })
     .always(function() {
-      alert("finished");
+
     })
   });
 
@@ -145,6 +160,13 @@ pageInit = function() {
     $(".tweetList").show(slideTime
     );
   });
+}
+
+
+
+// easy view switch hooks 
+switchToHomeView = function() {
+  switchTo(StateEnum.HOME);
 }
 
 switchToRegisterView = function() {

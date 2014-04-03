@@ -1,3 +1,8 @@
+/*
+ *	real time updates for kamula using sockets.io
+ *
+ */
+
 var app = require('../app');
 
 var io = require('socket.io').listen(app.httpServ); // attach socket.io to httpServer
