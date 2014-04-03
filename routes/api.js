@@ -197,9 +197,18 @@ app.post('/login', function(req, res) {
 
 // GET requests
 app.get('/find', function(req, res) {
-	collection.find({}, function(err, data) {
-		res.send(data);
+	mongoose.model('User').find(function(err, users){
+		mongoose.model('User').populate(users, {path: 'tweets'}, function(err, users) {
+			res.send(users);
+		});
 	});
+
+	/*
+	mongoose.model('User').find().sort({_id: -1}).exec(function(err, users) {
+		if (err) throw err;
+		res.send(users);
+	});
+	*/
 });
 
 app.get('/users', function(req, res) {
@@ -209,29 +218,24 @@ app.get('/users', function(req, res) {
 		name: true,
 		email: true
 	};
-
 	
 	mongoose.model('User').find( {}, projection ).sort({_id: -1}).exec(function(err, users) {
 		if (err) throw err;
 		res.send(users);
 	});
-
-/*
-	// sort newest first
-	collection.find( criteria, projection).sort({_id: -1}, function(err, data) {
-		res.send(data);
-	});
-*/
 });
 
 app.get('/latest', function(req, res) {
-	var projection = {
-
-	};
-
-	mongoose.model('Tweet').find({}, projection).sort({_id: -1}).limit(5).exec(function(err, tweets) {
+	mongoose.model('Tweet').find().sort({_id: -1}).limit(5).exec(function(err, tweets) {
 		if (err) throw err;
-		res.send(tweets);
+
+		var match = {
+			user: true
+		};
+
+		mongoose.model('Tweet').populate(tweets, { path: 'user', select: 'user -_id' }, function(err, tweets) {
+			res.send(tweets);
+		});
 	});
 
 /*

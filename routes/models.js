@@ -14,7 +14,7 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
 
 	var options = {
-		_id: true
+		_id: true // automatically add _id's (default)
 	};
 
 	var userSchema = new Schema({
