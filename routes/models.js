@@ -11,14 +11,19 @@ mongoose.connect(dataBaseUrl);
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
+
+// auto add _id's (this is the default behaviour but I'm being explicit)
+var options = { _id: true };
+
+// helper function
+var model = function(name, schema) {
+	mongoose.model(name, new Schema( schema, options ));
+};
+
+// init models once connected to mongodb
 db.once('open', function() {
-
-	var options = {
-		_id: true // automatically add _id's (default)
-	};
-
-	var userSchema = new Schema({
-		// specced
+	model('User', {
+		// according to specs
 		user: String,
 		name: String,
 		email: String,
@@ -35,9 +40,9 @@ db.once('open', function() {
 		tweets: [{
 			type: Schema.ObjectId, ref: 'Tweet'
 		}]
-	}, options);
+	});
 
-	var tweetSchema = new Schema({
+	model('Tweet', {
 		content: String,
 
 		user: { type: Schema.ObjectId, ref: 'User' },
@@ -45,17 +50,11 @@ db.once('open', function() {
 		comments: [{
 			type: Schema.ObjectId, ref: 'Comment'
 		}]
-	}, options)
+	});
 
-	var commentSchema = new Schema({
+	model('Comment', {
 		content: String,
-		user: {type: Schema.ObjectId, ref: 'User'},
+		user: { type: Schema.ObjectId, ref: 'User' },
 		tweet: { type: Schema.ObjectId, ref: 'Tweet' }
-	}, options)
-
-	// create the models
-	var User = mongoose.model('User', userSchema);
-	var Tweet = mongoose.model('Tweet', tweetSchema);
-	var Comment = mongoose.model('Comment', commentSchema);
-
+	})
 });

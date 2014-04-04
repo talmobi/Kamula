@@ -15,4 +15,9 @@ io.set('heartbeat interval', 25); // def is 25
 io.sockets.on('connection', function(socket) {
 	// send welcome message
 	socket.emit('welcome', {message: "Successfully connected for realtime updates."});
+	console.log('client CONNECTED, Number of clients: ' + io.sockets.clients().length);
+
+	socket.on('disconnect', function(socket) {
+		console.log('client DISCONNECTED, Number of clients: ' + io.sockets.clients().length);
+	});
 });
