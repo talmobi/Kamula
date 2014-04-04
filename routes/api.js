@@ -90,7 +90,7 @@ var register = function(req, res) {
 }
 
 /* API
- * Spec:sed API
+ * Spec:ed API
  */
 
 //Lisää käyttäjän järjestelmään	Runkona lisättävä käyttäjä JSON-muodossa

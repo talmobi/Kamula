@@ -12,12 +12,9 @@ mongoose.connect(dataBaseUrl);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 
-// auto add _id's (this is the default behaviour but I'm being explicit)
-var options = { _id: true };
-
 // helper function
 var model = function(name, schema) {
-	mongoose.model(name, new Schema( schema, options ));
+	mongoose.model(name, new Schema( schema, { _id: true } ));
 };
 
 // init models once connected to mongodb
@@ -44,9 +41,7 @@ db.once('open', function() {
 
 	model('Tweet', {
 		content: String,
-
 		user: { type: Schema.ObjectId, ref: 'User' },
-
 		comments: [{
 			type: Schema.ObjectId, ref: 'Comment'
 		}]

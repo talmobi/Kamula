@@ -36,7 +36,11 @@
                 <li><a id="RegisterLink" href="#">Register</a></li>
                 <li><a id="LoginLink" href="#">Login</a></li>
               </ul>
+
+              <p class="navbar-text navbar-right usersOnline">Users Online: <a id="usersOnlineId"></p>
+
             </div><!-- /.navbar-collapse -->
+
           </div><!-- /.container-fluid -->
         </nav>
       </div>
@@ -234,6 +238,10 @@
           $(".userList").prepend( str + '<br>');
           var e = $(".userList .list-group-item").first();
           e.hide().show(600);
+        });
+
+        socket.on('usersOnline', function(data) {
+          $("#usersOnlineId").text(data.usersOnline);
         });
 
       });
