@@ -206,14 +206,14 @@
 
         // update latest tweets when new tweet has arrived.
         socket.on('newtweet', function(data) {
-          console.log("got my new tweet back: " + data.message);
+          console.log("got my new tweet back: " + data.content);
           var string = '<li class="media" hidden="true"> \
                             <a class="pull-left" href="#"> \
                               <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
                             </a> \
                             <div class="media-body"> \
-                              <h4 class="media-heading">'+data.from+'</h4> \
-                              '+data.message+' \
+                              <h4 class="media-heading">'+data.user.user+'</h4> \
+                              '+data.content+' \
                             </div> \
                           </li>';
           $(".tweetList").prepend(string);

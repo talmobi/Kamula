@@ -143,8 +143,8 @@ pageInit = function() {
                         <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
                       </a> \
                       <div class="media-body"> \
-                        <h4 class="media-heading">'+val.from+'</h4> \
-                        '+val.message+' \
+                        <h4 class="media-heading">'+val.user.user+'</h4> \
+                        '+val.content+' \
                       </div> \
                     </li>';
       $(".tweetList").append( string );

@@ -5,7 +5,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-// connect to mongodb from config file (.gitignored)
+// connect to mongodb (mongolabs.com) from config file (.gitignored)
 var dataBaseUrl = require('fs').readFileSync('./mongodb_auth', 'utf8');
 mongoose.connect(dataBaseUrl);
 
