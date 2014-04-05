@@ -1,6 +1,5 @@
 /*
  *	real time updates for kamula using sockets.io
- *
  */
 
 var app = require('../app');
