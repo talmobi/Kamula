@@ -13,6 +13,7 @@ require('./config/passport')(passport, mongoose); // config passport
 
 // app config
 var app = express();
+// set explicit httpServer for socket.io (required since Express 3)
 app.httpServer = http.createServer(app);
 app.set('port', process.env.PORT || 80);
 app.set('views', path.join(__dirname, 'views'));
@@ -45,5 +46,6 @@ if ('development' == app.get('env')) {
 // require routes (SPA app, only one)
 require('./routes/index.js')(app, passport, mongoose);
 
-app.listen(80);
-console.log('Server listening on port 80');
+app.listen(app.get('port'), function() {
+	console.log('Express server listening on port ' + app.get('port'));
+});
