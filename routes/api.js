@@ -129,15 +129,18 @@ var login = function(req, res) {
 
 			if (count > 0) { // exists
 				// check if correct username and password
-				
+				req.login(name.user, function() {
+					console.log(json);
+					console.log(req.user);
+					res.send(200, { message: "Logged in successfully." });
+					console.log("USER LOGGED IN!");
+				});
 			} else {	// doesn't exists
 				res.send( 403, { message: "That User doesn't exist.", errorSource: "myUsername" } );
 				console.log("Login failed - username doesn't exist.");
 			}
 		});
 	}
-
-	console.log(json);
 }
 
 
@@ -228,21 +231,12 @@ app.post('/register', function(req, res) {
 });
 
 app.post('/login', function(req, res) {
-	console.log("POST REQUEST");
-
-	var data = req.body;
-
-	console.log(data);
-
-	res.send('200');
+	login(req, res);
 });
-// spec:ed API end
 
-
-
-
-
-// GET requests
+/**
+	*	GET requests
+	*/
 app.get('/find', function(req, res) {
 	mongoose.model('User').find(function(err, users){
 		mongoose.model('User').populate(users, {path: 'tweets'}, function(err, users) {

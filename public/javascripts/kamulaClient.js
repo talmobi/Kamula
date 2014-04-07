@@ -16,9 +16,7 @@ hideAllViews = function() {
 }
 
 switchTo = function(view) {
-
   if (typeof view === "string") {
-
     state = view;
 
     // hide other views, show current view
