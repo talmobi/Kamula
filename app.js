@@ -9,6 +9,9 @@ var path = require('path');
 
 var app = module.exports = express();
 
+// http basic authentication
+var passport = app.passport = require('passport');
+
 // all environments
 app.set('port', process.env.PORT || 80);
 app.set('views', path.join(__dirname, 'views'));
@@ -17,7 +20,14 @@ app.use(express.favicon(path.join(__dirname, 'favicon.ico')));
 
 app.use(express.json());
 app.use(express.urlencoded());
+
+app.use(express.cookieParser());
+app.use(express.bodyParser());
+
 app.use(express.methodOverride());
+
+// init passport
+app.use(passport.initialize());
 
 app.use(app.router);
 app.use(require('less-middleware')({ src: path.join(__dirname, 'public') }));
@@ -33,9 +43,12 @@ app.httpServ = http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
 
+
+
 // init models for mongoose & mongodb etc
 require('./routes/models')
 
 // init serverside scripts
 require('./routes/api');
 require('./routes/sockets');
+

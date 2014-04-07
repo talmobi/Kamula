@@ -14,14 +14,43 @@ var maxTweetLength = 200;
 
 var mongoose = require('mongoose');
 var app = require('../app'); // require express app
-var io = require('./sockets'); // acquire them sexy shlockets!~~
+var io = require('./sockets'); // acquire sockets
+var passport = app.passport;
 
-// http status codes
-// 400 - client side error
-// 500 - server side error
-// 200 - OK! happy bojangles https://www.youtube.com/watch?v=fIQJzcldzAw
 
-// Server side functions
+// configure passport basic authentication
+var BasicStrategy = require('passport-http').BasicStrategy;
+
+passport.use(new BasicStrategy(
+	function(username, password, done) {
+		var User = mongoose.model('User');
+		User.findOne( { lowercaseName: username.toLowerCase() }, function(err, user) {
+			if (err) {
+				return done(err);
+			}
+			if (!user) {
+				console.log('unknown user');
+				return done(null, false);
+			}
+			if (user.password !== password) {
+				console.log('password wrong');
+				return done(null, false);
+			}
+			console.log('password correct');
+			return done(null, user); // valid
+		});
+	}
+));
+
+// passport helper function
+var verify = function() {
+	// session false (http basic has no sessions)
+	return passport.authenticate('basic', { session: false });
+}
+
+/**
+  * Server side functions
+  */
 var addNewUser = function(json) {
 	// add necessary user values to the data
 	// acquired from the client
@@ -45,11 +74,6 @@ var addNewUser = function(json) {
 		// broadcast changes to all connected clients
 		io.sockets.emit('newuser', userData);
 	});
-}
-
-
-var verify = function(req, user) {
-	return true;
 }
 
 var nameIsOk = function(name) {
@@ -89,12 +113,40 @@ var register = function(req, res) {
 	console.log(json);
 }
 
+var login = function(req, res) {
+	var json = req.body;
+	var name = json.user;
+
+	if (!nameIsOk(name)) {
+		res.send( 400, { message: "Username faulty!", errorSource: "myUsername" } );
+	} else {	// username is fine
+		// check if username already exists
+
+		mongoose.model('User').count( {lowercaseName: name.toLowerCase() }, function(err, count) {
+			if (err) throw err;
+
+			console.log(count);
+
+			if (count > 0) { // exists
+				// check if correct username and password
+				
+			} else {	// doesn't exists
+				res.send( 403, { message: "That User doesn't exist.", errorSource: "myUsername" } );
+				console.log("Login failed - username doesn't exist.");
+			}
+		});
+	}
+
+	console.log(json);
+}
+
+
 /* API
  * Spec:ed API
  */
 
 //Lisää käyttäjän järjestelmään	Runkona lisättävä käyttäjä JSON-muodossa
-app.post('/api/users', function(req, res) {
+app.post('/api/users', verify(), function(req, res) {
 	register(req,res);
 });
 
@@ -102,7 +154,7 @@ app.post('/api/users', function(req, res) {
 app.get('/api/users/:user', function(req, res) {
 	var user = req.params.user;
 
-	collection.findOne({ type: "user", lowercaseName: user.toLowerCase() }, function(err, doc) {
+	mongoose.model('User').findOne({ lowercaseName: user.toLowerCase() }, function(err, doc) {
 		if (err) throw err;
 
 		if (doc) { // exists
@@ -121,35 +173,26 @@ app.get('/api/users/:user', function(req, res) {
 
 // Päivittää käyttäjän tietoja. Runkona käyttäjän uudet tiedot JSON-muodossa,
 // vaatii tunnistautumisen
-app.put('/api/users/:user', function(req, res) {
+app.put('/api/users/:user', verify(), function(req, res) {
 	var json = req.body;
 
-	collection.findOne({ type: "user", lowercaseName: json.user.toLowerCase() }, function(err, doc) {
+	mongoose.model('User').findOne({ lowercaseName: json.user.toLowerCase() }, function(err, doc) {
 		if (err) {
 			console.log(err);
 			res.send(400);
 		}
 
 		if (doc) { // exists
-
-			if (verify(req, user)) {
-
-				// take required information
-				var newdata = {
-					name: json.name,
-					email: json.email,
-					password: json.password
-				}
-
-				// update the users info
-				collection.update( doc, newdata );
-
-				res.send(200); // OK! Bojangles!
-
-			} else {
-				res.send(403); // unauthorized
+			var newdata = {
+				name: json.name,
+				email: json.email,
+				password: json.password
 			}
 
+			// update the users info
+			mongoose.model('User').update( doc, newdata );
+
+			res.send(200); // OK! Bojangles!
 		} else {
 			res.send(404); // user doesn't exist
 		}
@@ -157,10 +200,10 @@ app.put('/api/users/:user', function(req, res) {
 });
 
 // Poistaa annetun käyttäjän. Vaatii tunnistautumisen.
-app.delete('/api/users/:user', function(req, res) {
+app.delete('/api/users/:user', verify(), function(req, res) {
 	var json = req.body;
 
-	collection.findOne({ type: "user", lowercaseName: json.user.toLowerCase() }, function(err, doc) {
+	mongoose.model('User').findOne({ lowercaseName: json.user.toLowerCase() }, function(err, doc) {
 		if (err) {
 			console.log(err);
 		}
@@ -168,7 +211,7 @@ app.delete('/api/users/:user', function(req, res) {
 		if (doc) {
 			if (verify(req, user)) {
 				// TODO
-				console.log("TODO -- DELETE USER");
+				mongoose.model('User').remove( { lowercaseName: json.user.toLowerCase() } );
 			} else {
 				res.send(404);
 			}
@@ -193,6 +236,10 @@ app.post('/login', function(req, res) {
 
 	res.send('200');
 });
+// spec:ed API end
+
+
+
 
 
 // GET requests
@@ -202,17 +249,22 @@ app.get('/find', function(req, res) {
 			res.send(users);
 		});
 	});
-
-	/*
-	mongoose.model('User').find().sort({_id: -1}).exec(function(err, users) {
-		if (err) throw err;
-		res.send(users);
-	});
-	*/
 });
 
-app.get('/users', function(req, res) {
+// auth test
+app.get('/auth', verify(), function(req, res) {
 	var criteria = {type: 'user'};
+	var projection = {
+		user: true,
+		name: true,
+		email: true
+	};
+	
+	res.json(req.user);
+});
+
+
+app.get('/users', function(req, res) {
 	var projection = {
 		user: true,
 		name: true,
@@ -237,11 +289,6 @@ app.get('/latest', function(req, res) {
 			res.send(tweets);
 		});
 	});
-
-/*
-	collection.find({type: "tweet"}).sort({_id: -1}).limit( 5, function(err, data) {
-		res.send(data);
-	});*/
 });
 
 
