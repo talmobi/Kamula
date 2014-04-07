@@ -46,6 +46,7 @@ module.exports = function(app, passport, mongoose) {
 		console.log(req.user);
 	});
 
+	// check auth state
 	app.get('/auth', verify, function(req, res) {
 		res.send(200, "Authorized");
 	});

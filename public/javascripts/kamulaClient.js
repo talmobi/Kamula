@@ -58,9 +58,25 @@ var formFail = function(data) {
   }, 3000);
 }
 
+var isAuth = function() {
+  $.get('/auth', function() {
+    return true;
+  }).fail( function() {
+    return false;
+  });
+}
+
 // initialize jquery API funcitonality
 // for buttons etc
 init = function() {
+
+  // test button
+  $("#TestLink").click(function() {
+    if (isAuth())
+      console.log('Authorized');
+    else
+      console.log('Unauthorized');
+  });
 
   // init buttons
   $("#RegisterLink").click( function() {
