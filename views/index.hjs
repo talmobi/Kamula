@@ -95,7 +95,7 @@
               </div>
               <div class="panel-body">
                 
-                <form class="input-group myForm">
+                <form class="input-group myForm myRegisterForm">
                   <label>
                     <div class="form-group has-feedback myUsername">
                       <input type="text" class="form-control myInput myUsernameInput" placeholder="username">
@@ -145,7 +145,7 @@
               </div>
               <div class="panel-body">
                 
-                <form class="input-group myForm">
+                <form class="input-group myForm myLoginForm">
                   <label>
                     <input type="text" class="form-control myInput myUsernameInput" placeholder="Username"></input>
                   </label><br>

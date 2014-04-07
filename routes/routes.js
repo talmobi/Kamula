@@ -16,12 +16,50 @@ module.exports = function(app, passport, mongoose) {
 	var mongoose = require('mongoose');
 	var io = require('../config/sockets')(app); // acquire sockets
 
-	require('../config/server');
+	var tools = require('../config/tools');
 
-	/* 
-	 * API as per spec
-	 */
+	// verification middleware
+	var verify = function(req, res, next) {
+		if (req.isAuthenticated()) {
+			return next();
+		}
+
+		res.send(403, "Unauthorized!");
+	}
+
+	/** 
+		* API as per spec
+		*/
 	require('./api')(app);
+
+	/**
+		*	Registration and Login (Test)
+		*/
+	app.post('/register', passport.authenticate('local-register'), function(req, res) {
+		console.log('in register');
+
+		if (!req.user) {
+			console.log('creating new user');
+			registerNewUser(req.user);
+		}
+		
+		console.log(req.user);
+	});
+
+	app.get('/auth', verify, function(req, res) {
+		res.send(200, "Authorized");
+	});
+
+	app.post('/login', passport.authenticate('local-login'), function(req, res) {
+		console.log('in login');
+		if (!req.user) {
+			res.send( 404, { message: "That user doesn't exist.", errorSource: "" } );
+		} else {
+			res.send( 200, { message: "Logged in successfully!"});
+		}
+
+		console.log(req.user);
+	});
 
 	/**
 		*	GET requests

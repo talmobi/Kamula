@@ -98,22 +98,17 @@ init = function() {
 
   // register button pressed
   $(".registerButton").click( function() {
-    var dataOut = getFormData(".registerView");
 
-    console.log( JSON.stringify(dataOut) );
+    var data = getFormData(".registerView");
 
-    // handle the request
-    var jqhxr = $.post( "/register", dataOut, function( data ) {
-      console.log( JSON.stringify(data) )
-    })
-    .done(function() {
+    alert( JSON.stringify(data));
+
+    $.post("/register", data, function(recv) {
 
     })
     .fail(function(data) {
+      alert('failed');
       formFail(data);
-    })
-    .always(function() {
-
     })
   });
 
