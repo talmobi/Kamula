@@ -32,9 +32,12 @@
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-              <ul class="nav navbar-nav">
+              <ul class="nav navbar-nav" id="anonNav">
                 <li><a id="RegisterLink" href="#">Register</a></li>
                 <li><a id="LoginLink" href="#">Login</a></li>
+              </ul>
+              <ul class="nav navbar-nav" id="authNav">
+                <li><a id="LogoutLink" href="#">Logout</a></li>
               </ul>
 
               <p class="navbar-text navbar-right usersOnline">Users Online: <a id="usersOnlineId"></p>

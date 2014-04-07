@@ -75,6 +75,12 @@ init = function() {
     switchToHomeView()
   });
 
+  $("#LogoutLink").click( function() {
+    $.get("/logout", function() {
+      alert('success');
+    });
+  });
+
   // login button pressed
   $(".loginButton").click( function() {
     var dataOut = getFormData(".loginView");

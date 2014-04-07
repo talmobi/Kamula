@@ -64,6 +64,13 @@ module.exports = function(app, passport, mongoose) {
 	/**
 		*	GET requests
 		*/
+	app.get('/logout', function(req, res) {
+		console.log("in logout");
+
+		req.logout();
+		res.redirect('/');
+	});
+
 	app.get('/find', function(req, res) {
 		mongoose.model('User').find(function(err, users){
 			mongoose.model('User').populate(users, {path: 'tweets'}, function(err, users) {
