@@ -4,15 +4,15 @@
 	*/
 
 var LocalStrategy = require('passport-local').Strategy;
-var User = require('mongoose').models('User');
 
-module.exports = function(passport) {	// called from app.js
+module.exports = function(passport, mongoose) {	// called from app.js
+	var User = mongoose.model('User');
 
-	passport.seralizeUser(function(user, done) {
+	passport.serializeUser(function(user, done) {
 		done(null, user.lowercaseName);
 	});
 
-	passport.deseralizeUser(function(lowercaseName, done) {
+	passport.deserializeUser(function(lowercaseName, done) {
 		User.findOne( {lowercaseName: lowercaseName}, function(err, user) {
 			done(err, user);
 		});

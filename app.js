@@ -9,7 +9,7 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 
 require('./config/mongodb')(mongoose); // config mongodb
-require('./config/passport')(passport); // config passport
+require('./config/passport')(passport, mongoose); // config passport
 
 // app config
 var app = express();
