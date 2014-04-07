@@ -14,7 +14,7 @@ module.exports = function(app, passport, mongoose) {
 	var maxTweetLength = 200;
 
 	var mongoose = require('mongoose');
-	//var io = require('../config/sockets')(app); // acquire sockets
+	var io = require('../config/sockets')(app); // acquire sockets
 
 	require('../config/server');
 

@@ -13,6 +13,7 @@ require('./config/passport')(passport, mongoose); // config passport
 
 // app config
 var app = express();
+app.httpServer = http.createServer(app);
 app.set('port', process.env.PORT || 80);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs'); // hogan
@@ -44,6 +45,5 @@ if ('development' == app.get('env')) {
 // require routes (SPA app, only one)
 require('./routes/index.js')(app, passport, mongoose);
 
-http.createServer(app).listen(app.get('port'), function(){
-  console.log('Express server listening on port ' + app.get('port'));
-});
+app.listen(80);
+console.log('Server listening on port 80');
