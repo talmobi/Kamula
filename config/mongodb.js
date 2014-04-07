@@ -16,7 +16,7 @@ module.exports = function(mongoose) {
 		mongoose.model(name, new Schema( schema, { _id: true } ));
 	};
 
-	// init models once connected to mongodb
+	// init models now (blocking) to mongodb
 	model('User', {
 		// according to specs
 		user: String,

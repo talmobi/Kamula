@@ -26,7 +26,7 @@ app.use(express.bodyParser());
 app.use(express.methodOverride());
 
 // init passport
-app.use(express.sessions( { secret: "My little ponies" }));
+app.use(express.session( { secret: "My little ponies" }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(require('connect-flash')());
@@ -42,7 +42,7 @@ if ('development' == app.get('env')) {
 }
 
 // require routes (SPA app, only one)
-require('./routes/index.js')(app, passport);
+require('./routes/index.js')(app, passport, mongoose);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
