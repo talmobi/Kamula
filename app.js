@@ -2,20 +2,20 @@
 /**
  * Module dependencies.
  */
-
 var express = require('express');
 var http = require('http');
 var path = require('path');
+var mongoose = require('mongoose');
+var passport = require('passport');
 
-var app = module.exports = express();
+require('./config/mongodb')(mongoose); // config mongodb
+require('./config/passport')(passport); // config passport
 
-// http basic authentication
-var passport = app.passport = require('passport');
-
-// all environments
+// app config
+var app = express();
 app.set('port', process.env.PORT || 80);
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'hjs');
+app.set('view engine', 'hjs'); // hogan
 app.use(express.favicon(path.join(__dirname, 'favicon.ico')));
 
 app.use(express.json());
@@ -23,11 +23,13 @@ app.use(express.urlencoded());
 
 app.use(express.cookieParser());
 app.use(express.bodyParser());
-
 app.use(express.methodOverride());
 
 // init passport
+app.use(express.sessions( { secret: "My little ponies" }));
 app.use(passport.initialize());
+app.use(passport.session());
+app.use(require('connect-flash')());
 
 app.use(app.router);
 app.use(require('less-middleware')({ src: path.join(__dirname, 'public') }));
@@ -39,16 +41,9 @@ if ('development' == app.get('env')) {
   app.use(express.logger('dev'));
 }
 
-app.httpServ = http.createServer(app).listen(app.get('port'), function(){
+// require routes (SPA app, only one)
+require('./routes/index.js')(app, passport);
+
+http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
-
-
-
-// init models for mongoose & mongodb etc
-require('./routes/models')
-
-// init serverside scripts
-require('./routes/api');
-require('./routes/sockets');
-
