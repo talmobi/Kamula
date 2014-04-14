@@ -58,11 +58,14 @@ var formFail = function(data) {
   }, 3000);
 }
 
-var isAuth = function() {
+var isAuth = function(authed, failed) {
   $.get('/auth', function() {
-    return true;
-  }).fail( function() {
-    return false;
+  })
+  .done(function() {
+    authed();
+  })
+  .fail( function() {
+    failed();
   });
 }
 
@@ -72,10 +75,11 @@ init = function() {
 
   // test button
   $("#TestLink").click(function() {
-    if (isAuth())
+     isAuth( function() {
       console.log('Authorized');
-    else
+     }, function() {
       console.log('Unauthorized');
+     });
   });
 
   // init buttons
