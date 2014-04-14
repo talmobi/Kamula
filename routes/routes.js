@@ -14,8 +14,8 @@ module.exports = function(app, passport, mongoose) {
 	var maxTweetLength = 200;
 
 	var mongoose = require('mongoose');
-	var io = require('../config/sockets')(app); // acquire sockets
 
+	var io = app.io;
 	var tools = require('../config/tools');
 
 	// verification middleware
@@ -38,9 +38,19 @@ module.exports = function(app, passport, mongoose) {
 	app.post('/register', passport.authenticate('local-register'), function(req, res) {
 		console.log('in register');
 
-		if (!req.user) {
+		if (req.user) {
+			// no user was found, create a new user
 			console.log('creating new user');
-			registerNewUser(req.user);
+
+			var userData = tools.registerNewUser(req.user);
+
+			// delete password before sending the user data
+			delete userData.password;
+			
+			// broadcast changes to all connected clients
+			io.sockets.emit('newuser', userData);
+		} else {
+			res.send(403, {message: "A user with that name already exists."})
 		}
 		
 		console.log(req.user);

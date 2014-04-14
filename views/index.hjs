@@ -246,6 +246,7 @@
 
         socket.on('usersOnline', function(data) {
           $("#usersOnlineId").text(data.usersOnline);
+          console.log("USERS ONLKINE");
         });
 
       });

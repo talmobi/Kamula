@@ -35,9 +35,9 @@ module.exports = function(passport, mongoose) {	// called from app.js
 					if (err) return done(err);
 
 					if (!dbUser)  {
-						var data = tools.registerNewUser(req.body);
-
-						return done(null, data);
+						console.log("new registering");
+						var userData = tools.registerNewUser(req.body);
+						return done(null, userData);
 					} 
 
 					console.log('that username is already registered');

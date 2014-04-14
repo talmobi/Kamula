@@ -1,7 +1,6 @@
 var User = require('mongoose').model('User');
-var io = require('./sockets');
 
-module.exports =  {
+module.exports = {
 	registerNewUser: function(json) {
 		// add necessary user values to the data
 		// acquired from the client
@@ -17,12 +16,6 @@ module.exports =  {
 		// save the user to mongodb
 		userData.save(function(err) {
 			if (err) throw err;
-
-			// delete password before sending the user data
-			delete userData.password;
-			
-			// broadcast changes to all connected clients
-			//io.sockets.emit('newuser', userData);
 		});
 
 		return userData;
@@ -37,4 +30,5 @@ module.exports =  {
 		}
 		return true;
 	}
+
 }
