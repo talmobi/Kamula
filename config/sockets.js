@@ -2,11 +2,11 @@
  *	real time updates for kamula using sockets.io
  */
 
-/*
+
 var app = require('../app');
 
 // attach socket.io to httpServer
-var io = app.io;
+var io = require('socket.io').listen(app.httpServer);
 
 // config socket.io
 io.set('heartbeat timeout', 60); // def is 60
@@ -32,4 +32,3 @@ io.sockets.on('connection', function(socket) {
 	});
 
 });
-*/
