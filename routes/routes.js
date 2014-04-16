@@ -72,6 +72,38 @@ module.exports = function(app, passport, mongoose) {
 		console.log(req.user);
 	});
 
+	// update
+	app.post('/update', verify, function(req, res) {
+		console.log('in update');
+		if (!req.user) {
+			res.send( 404, { message: "Not authorized" } );
+		} else {
+			res.send( 200, { message: "Logged in successfully!"});
+		}
+
+		console.log(req.user);
+	});
+
+	// add friend
+	app.post('/addfriend', verify, function(req, res) {
+		// TODO
+		console.log('in update');
+		if (!req.user) {
+			res.send( 404, { message: "Not authorized" } );
+		} else {
+			res.send( 200, { message: "Logged in successfully!"});
+		}
+
+		console.log(req.user);
+	});
+
+		// delete self
+	app.post('/delete', verify, function(req, res) {
+		// TODO
+		console.log('in update');
+
+	});
+
 	/**
 		*	GET requests
 		*/
