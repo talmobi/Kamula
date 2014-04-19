@@ -9,13 +9,12 @@
 // Not even min char len specs.
 
 module.exports = function(app, passport, mongoose) {
-	var maxNameLength = 30;
-	var nameExcludePattern = /[^a-zA-Z0-9]+/;
-	var maxTweetLength = 200;
-
 	var mongoose = require('mongoose');
 
+	// get sockets
 	var io = require('../config/sockets');
+
+	// get tools for checking and inserting data
 	var tools = require('../config/tools');
 
 	// verification middleware
