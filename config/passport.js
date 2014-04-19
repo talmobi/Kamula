@@ -36,7 +36,7 @@ module.exports = function(passport, mongoose) {	// called from app.js
 
 					if (!dbUser)  {
 						console.log("new registering");
-						var userData = tools.registerNewUser(req.body);
+						var userData = tools.toUserData(req.body);
 						return done(null, userData);
 					} 
 

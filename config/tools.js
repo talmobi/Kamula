@@ -8,6 +8,17 @@ module.exports = {
 	registerNewUser: function(json) {
 		// add necessary user values to the data
 		// acquired from the client
+		var userData = this.toUserData(json);
+
+		// save the user to mongodb
+		userData.save(function(err) {
+			if (err) throw err;
+		});
+
+		return userData;
+	},
+
+	toUserData: function(json) {
 		var userData = new User( {
 			user: json.user || "",
 			name: json.name || "",
@@ -15,11 +26,6 @@ module.exports = {
 			password: json.password || "",
 			
 			lowercaseName: json.user.toLowerCase(),
-		});
-
-		// save the user to mongodb
-		userData.save(function(err) {
-			if (err) throw err;
 		});
 
 		return userData;
