@@ -6,7 +6,7 @@
 var app = require('../app');
 
 // attach socket.io to httpServer
-var io = require('socket.io').listen(app.httpServer);
+var io = module.exports = require('socket.io').listen(app.httpServer);
 
 // config socket.io
 io.set('heartbeat timeout', 60); // def is 60

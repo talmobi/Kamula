@@ -15,7 +15,7 @@ module.exports = function(app, passport, mongoose) {
 
 	var mongoose = require('mongoose');
 
-	var io = app.io;
+	var io = require('../config/sockets');
 	var tools = require('../config/tools');
 
 	// verification middleware
