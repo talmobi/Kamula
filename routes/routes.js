@@ -57,7 +57,11 @@ module.exports = function(app, passport, mongoose) {
 
 	// check auth state
 	app.get('/auth', verify, function(req, res) {
-		res.send(200, "Authorized");
+		var userData = tools.toPlainUser(req.user);
+		delete userData.password; // delete the password
+		console.log("in /auth");
+		console.log(userData);
+		res.send(200, JSON.stringify( userData ));
 	});
 
 	app.post('/login', passport.authenticate('local-login'), function(req, res) {
@@ -86,7 +90,7 @@ module.exports = function(app, passport, mongoose) {
 	// add friend
 	app.post('/addfriend', verify, function(req, res) {
 		// TODO
-		console.log('in update');
+		console.log('in /addfriend');
 		if (!req.user) {
 			res.send( 404, { message: "Not authorized" } );
 		} else {
@@ -99,7 +103,7 @@ module.exports = function(app, passport, mongoose) {
 		// delete self
 	app.post('/delete', verify, function(req, res) {
 		// TODO
-		console.log('in update');
+		console.log('in /delete');
 
 	});
 

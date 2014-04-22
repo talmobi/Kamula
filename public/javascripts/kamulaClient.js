@@ -16,6 +16,10 @@ hideAllViews = function() {
   $(".myView").hide(slideTime);
 }
 
+hideAllViewsNow = function() {
+  $(".myView").hide(0);
+}
+
 switchTo = function(view) {
   if (typeof view === "string") {
     state = view;
@@ -60,24 +64,24 @@ var formFail = function(data) {
 }
 
 var isAuth = function(authed, failed) {
-  $.get('/auth', function() {
+  $.get('/auth', function(data) {
+    authed(data);
   })
-  .done(function() {
-    authed();
-  })
-  .fail( function() {
-    failed();
-  });
+     .fail( function() {
+       failed();
+     });
 }
 
 // initialize jquery API funcitonality
 // for buttons etc
 init = function() {
 
+
   // test button
   $("#TestLink").click(function() {
-     isAuth( function() {
+     isAuth( function(data) {
       console.log('Authorized');
+      alert(data);
      }, function() {
       console.log('Unauthorized');
      });
@@ -100,6 +104,18 @@ init = function() {
     $.get("/logout", function() {
       alert('success');
     });
+  });
+
+  // Profile button
+  $("#ProfileLink").click( function() {
+    switchToProfileView();
+  });
+
+  // Writing tweet
+  $(".TwiitWritePanel button").click( function() {
+    var text = $(".TwiitWritePanel input").val();
+    alert(text);
+    // TODO bind data to this
   });
 
   // login button pressed
@@ -176,7 +192,25 @@ pageInit = function() {
 
 
 
-// helper state switching hooks 
+// helper state switching hooks
+switchToMainPage = function() {
+  isAuth(function() {
+    // hide content for anons
+    $("#anonNav").hide();
+    $("#authNav").show();
+
+    // logged in
+    switchToProfileView();
+  }, function() {
+    // show content for anons
+    $("#anonNav").show();
+    $("#authNav").hide();
+
+    // not logged in
+    switchToHomeView();
+  });
+}
+
 switchToHomeView = function() {
   switchTo(StateEnum.HOME);
 }

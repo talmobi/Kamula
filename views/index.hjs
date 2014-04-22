@@ -32,12 +32,17 @@
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-              <ul class="nav navbar-nav" id="anonNav">
+              <ul class="nav navbar-nav" id="anonNav" hidden>
                 <li><a id="RegisterLink" href="#">Register</a></li>
                 <li><a id="LoginLink" href="#">Login</a></li>
               </ul>
-              <ul class="nav navbar-nav" id="authNav">
+              <ul class="nav navbar-nav" id="authNav" hidden>
                 <li><a id="LogoutLink" href="#">Logout</a></li>
+                <li><a id="ProfileLink" href="#">Profile</a></li>
+              </ul>
+
+              <!-- test navs -->
+              <ul class="nav navbar-nav" id="testNav">
                 <li><a id="TestLink" href="#">Test Auth</a></li>
               </ul>
 
@@ -53,7 +58,7 @@
       <div class="container mainContainer">
 
         <!-- Anon view -->
-        <div class="anonView myView HOME">
+        <div class="anonView myView HOME" hidden>
         <!-- list of users -->
           <div id="users" class="col-sm-4">
             <div class="panel panel-primary">
@@ -61,7 +66,7 @@
                 <h3 class="panel-title">Käyttäjät</h3>
               </div>
               <div class="panel-body">
-                <div class="list-group userList" id="userList" hidden="true">
+                <div class="list-group userList" id="userList">
 
                   <!--<a href="#" class="list-group-item">Blinky</a> -->
                   <!-- jqeury will add users here -->
@@ -78,17 +83,17 @@
                 <h3 class="panel-title">Tuoreimmat Twiitit</h3>
               </div>
               <div class="panel-body">
-                <ul class="media-list tweetList" hidden="true">
+                <ul class="media-list tweetList">
                   <!-- Sample twiitti, later to be added from db with jquery -->
                 </ul>
               </div>
             </div>
           </div>
-        </div>
+        </div> <!-- Anon view -->
 
 
         <!-- Profile view -->
-        <div class="profileView myView PROFILE">
+        <div class="profileView myView PROFILE" hidden>
         <!-- list of users -->
           <div id="users" class="col-sm-4">
             <div class="panel panel-primary">
@@ -96,7 +101,7 @@
                 <h3 class="panel-title">Kaverit</h3>
               </div>
               <div class="panel-body">
-                <div class="list-group userList" id="userList" hidden="true">
+                <div class="list-group userList" id="userList">
 
                   <!--<a href="#" class="list-group-item">Blinky</a> -->
                   <!-- jqeury will add users here -->
@@ -106,19 +111,36 @@
             </div>
           </div>
 
-          <!-- Recent own/friends tweets view -->
+          <!-- Recent own tweets view -->
           <div class="col-sm-8">
             <div class="panel panel-primary">
               <div class="panel-heading">
-                <h3 class="panel-title">Tuttavien Twiitit</h3>
+                <h3 class="panel-title">Omat Twiitit</h3>
               </div>
               <div class="panel-body">
-                <ul class="media-list tweetList" hidden="true">
+                <ul class="media-list tweetList">
                   <!-- Sample twiitti, later to be added from db with jquery -->
                 </ul>
               </div>
             </div>
-          </div>
+          </div> <!-- Recent own/friends tweets view -->
+
+          <!-- write new tweet -->
+          <div class="col-sm-8">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">Kirjoita Twiitti</h3>
+              </div>
+              <div class="panel-body">
+                <div class="input-group TwiitWritePanel">
+                  <input type="text" class="form-control" placeholder="Twiit twiit.">
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">Twitituu!</button>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div> <!-- write new tweet -->
 
         </div> <!-- PROFILE -->
 
@@ -169,7 +191,6 @@
               </div>
             </div>
           </div>
-
         </div> <!-- Register view -->
 
 
@@ -203,11 +224,10 @@
               </div>
             </div>
           </div>
-
         </div> <!-- Login view -->
 
 
-
+      </div> <!-- main container -->
     </div> <!-- main page container -->
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -229,10 +249,11 @@
         // init home page
         pageInit();
 
+        //hideAllViewsNow();
+
         // init functionality
         init();
        
-
         /*
          *  socket.io - for real time updates (tweets etc)
          */
@@ -273,36 +294,34 @@
             }, 1200);
           }
 
-          // update profile tweets if a friend posted a tweet
-          isAuth(function() {
-            for (var i = 0; i < friends.length; i++) {
-              if (friends[i].user === data.user.user) { // check that it's a friend
-                var tweetList = $("PROFILE .tweetList");
-                var tweetListli = $("PROFILE .tweetList li");
-                console.log("got my new tweet back: " + data.content);
-                var string = '<li class="media" hidden="true"> \
-                                  <a class="pull-left" href="#"> \
-                                    <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
-                                  </a> \
-                                  <div class="media-body"> \
-                                    <h4 class="media-heading">'+data.user.user+'</h4> \
-                                    '+data.content+' \
-                                  </div> \
-                                </li>';
-                tweetList.prepend(string);
-                // animate it a little bit
-                tweetListli.first().hide().show(600);
+          // update profile tweets if it's my own tweet
+          isAuth(function(user) {
+            if (user.user === data.user.user) { // check that it's a friend
+              var tweetList = $("PROFILE .tweetList");
+              var tweetListli = $("PROFILE .tweetList li");
+              console.log("got my new tweet back: " + data.content);
+              var string = '<li class="media" hidden="true"> \
+                                <a class="pull-left" href="#"> \
+                                  <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
+                                </a> \
+                                <div class="media-body"> \
+                                  <h4 class="media-heading">'+data.user.user+'</h4> \
+                                  '+data.content+' \
+                                </div> \
+                              </li>';
+              tweetList.prepend(string);
+              // animate it a little bit
+              tweetListli.first().hide().show(600);
 
-                // keep at max 5 shown
-                if (tweetListli.length > 5) {
-                  var element = $("PROFILE .tweetList li:last");
-                  element.hide(1200); // animate ftw
-                  setTimeout(function() {
-                    element.remove();
-                  }, 1200);
-                }
-              } // if
-            } // for loop
+              // keep at max 5 shown
+              if (tweetListli.length > 5) {
+                var element = $("PROFILE .tweetList li:last");
+                element.hide(1200); // animate ftw
+                setTimeout(function() {
+                  element.remove();
+                }, 1200);
+              }
+            } // if
           }); // isAuth();
 
         });
@@ -323,6 +342,9 @@
         });
 
       });
+
+      // open the main page based on if we are logged in or not
+      switchToMainPage();
     </script>
 
   </body>

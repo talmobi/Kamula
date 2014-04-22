@@ -18,6 +18,19 @@ module.exports = {
 		return userData;
 	},
 
+	toPlainUser: function(json) {
+		var userData = {
+			user: json.user || "",
+			name: json.name || "",
+			email: json.email || "",
+			password: json.password || "",
+			
+			lowercaseName: json.user.toLowerCase()
+		};
+
+		return userData;
+	},
+
 	toUserData: function(json) {
 		var userData = new User( {
 			user: json.user || "",
@@ -25,7 +38,7 @@ module.exports = {
 			email: json.email || "",
 			password: json.password || "",
 			
-			lowercaseName: json.user.toLowerCase(),
+			lowercaseName: json.user.toLowerCase()
 		});
 
 		return userData;
