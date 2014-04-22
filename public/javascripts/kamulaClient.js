@@ -67,7 +67,7 @@ var isAuth = function(authed, failed) {
   $.get('/auth', function(data) {
     var json = JSON.parse(data);
     authed(json);
-    $("#userNameId").text( json.user );
+    setName(json.user);
     $("#anonNav").hide();
     $("#authNav").show();
   })
@@ -140,7 +140,7 @@ init = function() {
     })
     .done(function() {
       navBarAuth();
-      $("#userNameId").text( dataOut.user );
+      setName(dataOut.user);
       switchToHomeView();
     })
     .fail(function(data) {
@@ -164,7 +164,7 @@ init = function() {
     })
     .done(function() {
       navBarAuth();
-      $("#userNameId").text( data.user );
+      setName(data.user);
       switchToHomeView();
     })
     .fail(function(data) {
@@ -212,10 +212,14 @@ pageInit = function() {
 navBarAnon = function() {
   $("#anonNav").show();
   $("#authNav").hide();
+  $("#userNameId").text( "Not logged in." );
 }
 navBarAuth = function() {
   $("#anonNav").hide();
   $("#authNav").show();
+}
+setName = function(name) {
+  $("#userNameId").text( "Welcome, " + name );
 }
 
 // helper state switching hooks
