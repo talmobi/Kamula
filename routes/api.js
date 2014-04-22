@@ -1,4 +1,4 @@
-module.exports = function(app) {
+module.exports = function(app, verify, mongoose) {
 	//Lisää käyttäjän järjestelmään	Runkona lisättävä käyttäjä JSON-muodossa
 	app.post('/api/users', function(req, res) {
 		register(req,res);
@@ -15,8 +15,12 @@ module.exports = function(app) {
 				var data = {
 					user: doc.user,
 					name: doc.name,
-					email: doc.email
+					email: doc.email,
+
+					friends: doc.friends,
+					tweets: doc.tweets
 				}
+
 				res.send( data );
 			} else {	// doesn't exists
 				res.send( 404, { message: "That user doesn't exist.", errorSource: "" } );
@@ -27,8 +31,14 @@ module.exports = function(app) {
 
 	// Päivittää käyttäjän tietoja. Runkona käyttäjän uudet tiedot JSON-muodossa,
 	// vaatii tunnistautumisen
-	app.put('/api/users/:user', function(req, res) {
+	app.put('/api/users/:user', verify, function(req, res) {
 		var json = req.body;
+
+		if (json.user.toLowerCase() !== req.user.lowercaseName) {
+			console.log("in app.put API - error");
+			res.send(404);
+			return;
+		}
 
 		mongoose.model('User').findOne({ lowercaseName: json.user.toLowerCase() }, function(err, doc) {
 			if (err) {
@@ -54,8 +64,14 @@ module.exports = function(app) {
 	});
 
 	// Poistaa annetun käyttäjän. Vaatii tunnistautumisen.
-	app.delete('/api/users/:user', function(req, res) {
+	app.delete('/api/users/:user', verify, function(req, res) {
 		var json = req.body;
+
+		if (json.user.toLowerCase() !== req.user.lowercaseName) {
+			console.log("in app.delete API - error");
+			res.send(404);
+			return;
+		}
 
 		mongoose.model('User').findOne({ lowercaseName: json.user.toLowerCase() }, function(err, doc) {
 			if (err) {

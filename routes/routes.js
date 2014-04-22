@@ -29,7 +29,7 @@ module.exports = function(app, passport, mongoose) {
 	/** 
 		* API as per spec
 		*/
-	require('./api')(app);
+	require('./api')(app, verify, mongoose);
 
 	/**
 		*	Registration and Login (Test)
