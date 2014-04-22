@@ -12,7 +12,7 @@ module.exports = function(app, verify, mongoose) {
 		};
 
 		var http = require('http');
-		var proxyReq = http.request(options, function(proxyRes) {
+		var proxyReq = http.request(opts, function(proxyRes) {
 			proxyRes.setEncoding('utf8');
 
 			proxyRes.on('data', function(chunk) {

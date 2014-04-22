@@ -30,6 +30,9 @@ module.exports = function(app, passport, mongoose) {
 		* API as per spec
 		*/
 	require('./api')(app, verify, mongoose);
+	/*
+		TODO - unsure about self executing functin pattern here
+	*/
 
 	/**
 		*	Registration and Login (Test)
@@ -42,17 +45,20 @@ module.exports = function(app, passport, mongoose) {
 			console.log('creating new user');
 
 			var userData = tools.registerNewUser(req.user);
+			var userData = tools.toPlainUser(req.user);
 
 			// delete password before sending the user data
 			delete userData.password;
 			
 			// broadcast changes to all connected clients
 			io.sockets.emit('newuser', userData);
+
+			console.log(userData);
+
+			res.send(200, {message: "Created new user"});
 		} else {
 			res.send(403, {message: "A user with that name already exists."})
 		}
-		
-		console.log(req.user);
 	});
 
 	// check auth state

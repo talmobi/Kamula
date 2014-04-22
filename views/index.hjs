@@ -270,8 +270,8 @@
 
         // update latest tweets when new tweet has arrived.
         socket.on('newtweet', function(data) {
-          var tweetList = $("HOME .tweetList");
-          var tweetListli = $("HOME .tweetList li");
+          var tweetList = $(".HOME .tweetList");
+          var tweetListli = $(".HOME .tweetList li");
           console.log("got my new tweet back: " + data.content);
           var string = '<li class="media" hidden="true"> \
                             <a class="pull-left" href="#"> \
@@ -288,7 +288,7 @@
 
           // keep at max 5 shown
           if (tweetListli.length > 5) {
-            var element = $("HOME .tweetList li:last");
+            var element = $(".HOME .tweetList li:last");
             element.hide(1200); // animate ftw
             setTimeout(function() {
               element.remove();
@@ -298,8 +298,8 @@
           // update profile tweets if it's my own tweet
           isAuth(function(user) {
             if (user.user === data.user.user) { // check that it's a friend
-              var tweetList = $("PROFILE .tweetList");
-              var tweetListli = $("PROFILE .tweetList li");
+              var tweetList = $(".PROFILE .tweetList");
+              var tweetListli = $(".PROFILE .tweetList li");
               console.log("got my new tweet back: " + data.content);
               var string = '<li class="media" hidden="true"> \
                                 <a class="pull-left" href="#"> \
@@ -316,7 +316,7 @@
 
               // keep at max 5 shown
               if (tweetListli.length > 5) {
-                var element = $("PROFILE .tweetList li:last");
+                var element = $(".PROFILE .tweetList li:last");
                 element.hide(1200); // animate ftw
                 setTimeout(function() {
                   element.remove();
@@ -329,11 +329,11 @@
 
         // update user list if a new user has registered
         socket.on('newuser', function(data) {
-          console.log("new user registered: " + (data.name || data.username) );
+          console.log("new user registered: " + (data.name || data.user) );
           
           var str = '<a href="#" class="list-group-item">'+ (data.name || data.user) +'</a>';
-          $("HOME .userList").prepend( str + '<br>');
-          var e = $("HOME .userList .list-group-item").first();
+          $(".HOME .userList").prepend( str + '<br>');
+          var e = $(".HOME .userList .list-group-item").first();
           e.hide().show(600);
         });
 
