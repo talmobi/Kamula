@@ -46,6 +46,7 @@
                 <li><a id="TestLink" href="#">Test Auth</a></li>
               </ul>
 
+              <p class="navbar-text navbar-right userName">Welcome, <a id="userNameId"></p>
               <p class="navbar-text navbar-right usersOnline">Users Online: <a id="usersOnlineId"></p>
 
             </div><!-- /.navbar-collapse -->

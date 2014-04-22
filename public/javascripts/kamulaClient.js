@@ -66,9 +66,13 @@ var formFail = function(data) {
 var isAuth = function(authed, failed) {
   $.get('/auth', function(data) {
     authed(data);
+    $("#anonNav").hide();
+    $("#authNav").show();
   })
      .fail( function() {
        failed();
+       $("#anonNav").show();
+      $("#authNav").hide();
      });
 }
 
@@ -102,8 +106,13 @@ init = function() {
 
   $("#LogoutLink").click( function() {
     $.get("/logout", function() {
-      alert('success');
-    });
+    })
+      .done(function() {
+        navBarAnon();
+      })
+      .fail(function() {
+
+      });
   });
 
   // Profile button
@@ -129,9 +138,11 @@ init = function() {
       console.log( JSON.stringify(data) )
     })
     .done(function() {
-
+      navBarAuth();
+      switchToHomeView();
     })
     .fail(function(data) {
+      navBarAnon();
       formFail(data);
     })
     .always(function() {
@@ -149,9 +160,14 @@ init = function() {
     $.post("/register", data, function(recv) {
 
     })
+    .done(function() {
+      navBarAuth();
+      switchToHomeView();
+    })
     .fail(function(data) {
       alert('failed');
       formFail(data);
+      navBarAnon();
     })
   });
 
@@ -190,21 +206,26 @@ pageInit = function() {
   });
 }
 
-
+navBarAnon = function() {
+  $("#anonNav").show();
+  $("#authNav").hide();
+}
+navBarAuth = function() {
+  $("#anonNav").hide();
+  $("#authNav").show();
+}
 
 // helper state switching hooks
 switchToMainPage = function() {
   isAuth(function() {
     // hide content for anons
-    $("#anonNav").hide();
-    $("#authNav").show();
+    navBarAuth();
 
     // logged in
     switchToProfileView();
   }, function() {
     // show content for anons
-    $("#anonNav").show();
-    $("#authNav").hide();
+    navBarAnon();
 
     // not logged in
     switchToHomeView();

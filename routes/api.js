@@ -47,10 +47,10 @@ module.exports = function(app, verify, mongoose) {
 			}
 
 			if (doc) { // exists
-				var newdata = {
-					name: json.name,
-					email: json.email,
-					password: json.password
+				var data = {
+					user: doc.user,
+					name: doc.name,
+					email: doc.email
 				}
 
 				// update the users info
