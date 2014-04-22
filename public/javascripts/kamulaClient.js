@@ -5,7 +5,8 @@ var slideTime = 600;
 var StateEnum = {
   HOME: "HOME",
   REG: "REG",
-  LOG: "LOG"
+  LOG: "LOG",
+  PROFILE: "PROFILE"
 };
 
 var state = StateEnum.HOME;
@@ -147,10 +148,10 @@ pageInit = function() {
     $.each( data, function( key, val) {
       console.log(val);
       var str = '<a href="#" class="list-group-item">'+ (val.name || val.user) +'</a>';
-      $(".userList").append( str + '<br>');
+      $(".HOME .userList").append( str + '<br>');
     });
 
-    $(".userList").show(slideTime);
+    $(".HOME .userList").show(slideTime);
   });
 
   // get latest tweets through api
@@ -166,16 +167,16 @@ pageInit = function() {
                         '+val.content+' \
                       </div> \
                     </li>';
-      $(".tweetList").append( string );
+      $(".HOME .tweetList").append( string );
     });
 
-    $(".tweetList").show(slideTime);
+    $(".HOME .tweetList").show(slideTime);
   });
 }
 
 
 
-// easy view switch hooks 
+// helper state switching hooks 
 switchToHomeView = function() {
   switchTo(StateEnum.HOME);
 }
@@ -186,4 +187,8 @@ switchToRegisterView = function() {
 
 switchToLoginView = function() {
   switchTo(StateEnum.LOG);
+}
+
+switchToProfileView = function() {
+  switchTo(StateEnum.PROFILE);
 }

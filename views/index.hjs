@@ -87,6 +87,41 @@
         </div>
 
 
+        <!-- Profile view -->
+        <div class="profileView myView PROFILE">
+        <!-- list of users -->
+          <div id="users" class="col-sm-4">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">Kaverit</h3>
+              </div>
+              <div class="panel-body">
+                <div class="list-group userList" id="userList" hidden="true">
+
+                  <!--<a href="#" class="list-group-item">Blinky</a> -->
+                  <!-- jqeury will add users here -->
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent own/friends tweets view -->
+          <div class="col-sm-8">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">Tuttavien Twiitit</h3>
+              </div>
+              <div class="panel-body">
+                <ul class="media-list tweetList" hidden="true">
+                  <!-- Sample twiitti, later to be added from db with jquery -->
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </div> <!-- PROFILE -->
+
 
         <!-- Register view -->
         <div class="registerView myView REG" hidden>
@@ -135,7 +170,7 @@
             </div>
           </div>
 
-        </div>
+        </div> <!-- Register view -->
 
 
         <!-- Login view -->
@@ -169,11 +204,11 @@
             </div>
           </div>
 
-        </div>
+        </div> <!-- Login view -->
 
 
 
-    </div>
+    </div> <!-- main page container -->
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
@@ -183,9 +218,12 @@
     <!-- grab socket.io.js library from server -->
     <script src="/socket.io/socket.io.js"></script>
 
+    <!-- load client side scripts -->
     <script src="/javascripts/kamulaClient.js"></script>
 
     <script type="text/javascript">
+      var friends = [];
+
       $(function() {
 
         // init home page
@@ -210,6 +248,8 @@
 
         // update latest tweets when new tweet has arrived.
         socket.on('newtweet', function(data) {
+          var tweetList = $("HOME .tweetList");
+          var tweetListli = $("HOME .tweetList li");
           console.log("got my new tweet back: " + data.content);
           var string = '<li class="media" hidden="true"> \
                             <a class="pull-left" href="#"> \
@@ -220,18 +260,51 @@
                               '+data.content+' \
                             </div> \
                           </li>';
-          $(".tweetList").prepend(string);
+          tweetList.prepend(string);
           // animate it a little bit
-          $(".tweetList li").first().hide().show(600);
+          tweetListli.first().hide().show(600);
 
           // keep at max 5 shown
-          if ($(".tweetList li").length > 5) {
-            var element = $(".tweetList li:last");
+          if (tweetListli.length > 5) {
+            var element = $("HOME .tweetList li:last");
             element.hide(1200); // animate ftw
             setTimeout(function() {
               element.remove();
             }, 1200);
           }
+
+          // update profile tweets if a friend posted a tweet
+          isAuth(function() {
+            for (var i = 0; i < friends.length; i++) {
+              if (friends[i].user === data.user.user) { // check that it's a friend
+                var tweetList = $("PROFILE .tweetList");
+                var tweetListli = $("PROFILE .tweetList li");
+                console.log("got my new tweet back: " + data.content);
+                var string = '<li class="media" hidden="true"> \
+                                  <a class="pull-left" href="#"> \
+                                    <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
+                                  </a> \
+                                  <div class="media-body"> \
+                                    <h4 class="media-heading">'+data.user.user+'</h4> \
+                                    '+data.content+' \
+                                  </div> \
+                                </li>';
+                tweetList.prepend(string);
+                // animate it a little bit
+                tweetListli.first().hide().show(600);
+
+                // keep at max 5 shown
+                if (tweetListli.length > 5) {
+                  var element = $("PROFILE .tweetList li:last");
+                  element.hide(1200); // animate ftw
+                  setTimeout(function() {
+                    element.remove();
+                  }, 1200);
+                }
+              } // if
+            } // for loop
+          }); // isAuth();
+
         });
 
         // update user list if a new user has registered
@@ -239,8 +312,8 @@
           console.log("new user registered: " + (data.name || data.username) );
           
           var str = '<a href="#" class="list-group-item">'+ (data.name || data.user) +'</a>';
-          $(".userList").prepend( str + '<br>');
-          var e = $(".userList .list-group-item").first();
+          $("HOME .userList").prepend( str + '<br>');
+          var e = $("HOME .userList .list-group-item").first();
           e.hide().show(600);
         });
 
