@@ -65,14 +65,16 @@ var formFail = function(data) {
 
 var isAuth = function(authed, failed) {
   $.get('/auth', function(data) {
-    authed(data);
+    var json = JSON.parse(data);
+    authed(json);
+    $("#userNameId").text( json.user );
     $("#anonNav").hide();
     $("#authNav").show();
   })
      .fail( function() {
        failed();
        $("#anonNav").show();
-      $("#authNav").hide();
+       $("#authNav").hide();
      });
 }
 
@@ -85,7 +87,7 @@ init = function() {
   $("#TestLink").click(function() {
      isAuth( function(data) {
       console.log('Authorized');
-      alert(data);
+      console.log( data );
      }, function() {
       console.log('Unauthorized');
      });
@@ -138,6 +140,7 @@ init = function() {
     })
     .done(function() {
       navBarAuth();
+      $("#userNameId").text( dataOut.user );
       switchToHomeView();
     })
     .fail(function(data) {
@@ -154,13 +157,14 @@ init = function() {
 
     var data = getFormData(".registerView");
 
-    alert( JSON.stringify(data));
+    //alert( JSON.stringify(data));
 
     $.post("/register", data, function(recv) {
 
     })
     .done(function() {
       navBarAuth();
+      $("#userNameId").text( data.user );
       switchToHomeView();
     })
     .fail(function(data) {

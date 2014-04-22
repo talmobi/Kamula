@@ -46,8 +46,8 @@
                 <li><a id="TestLink" href="#">Test Auth</a></li>
               </ul>
 
-              <p class="navbar-text navbar-right userName">Welcome, <a id="userNameId"></p>
               <p class="navbar-text navbar-right usersOnline">Users Online: <a id="usersOnlineId"></p>
+              <p class="navbar-text navbar-right userName">Welcome, <a id="userNameId"></p>
 
             </div><!-- /.navbar-collapse -->
 
@@ -346,6 +346,8 @@
 
       // open the main page based on if we are logged in or not
       switchToMainPage();
+
+      $("#userNameId").text("Test");
     </script>
 
   </body>
