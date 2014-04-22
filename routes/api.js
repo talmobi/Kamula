@@ -1,7 +1,36 @@
 module.exports = function(app, verify, mongoose) {
 	//Lisää käyttäjän järjestelmään	Runkona lisättävä käyttäjä JSON-muodossa
 	app.post('/api/users', function(req, res) {
-		register(req,res);
+		// proxy to /register on this server
+
+		var opts = {
+			host: 'localhost',
+			port: 80,
+			path: '/register',
+			method: 'POST',
+			headers: req.headers
+		};
+
+		var http = require('http');
+		var proxyReq = http.request(options, function(proxyRes) {
+			proxyRes.setEncoding('utf8');
+
+			proxyRes.on('data', function(chunk) {
+				res.write(chunk);
+			});
+
+			proxyRes.on('close', function(chunk) {
+				res.writeHead(proxyRes.statusCode);
+				res.end();
+			});
+		})
+			.on('error', function(err) {
+				console.log(err.message);
+				res.writeHead(500);
+				res.end();
+			});
+
+		proxyReq.end();
 	});
 
 	// Hakee käyttäjän tiedot. Palauttaa käyttäjän tiedot JSON-muodossa

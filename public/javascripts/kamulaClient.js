@@ -111,7 +111,6 @@ init = function() {
         navBarAnon();
       })
       .fail(function() {
-
       });
   });
 
