@@ -165,13 +165,18 @@ init = function() {
         type: 'POST',
         url: '/twiit',
         data: JSON.stringify(data),
-        success: function(data) { alert('sent data: ' + data); },
+        success: function(data) { 
+          console.log('successfully sent tweet');
+          console.log(data);
+         },
+        error: function() {console.log("Error sending tweet.")},
         contentType: "application/json",
         dataType: 'json'
       });
 
     }, function() {
       alert("Not logged in.");
+      switchToLoginView();
     });
     
   });
@@ -210,13 +215,14 @@ init = function() {
     $.post("/register", data, function(recv) {
 
     })
-    .done(function() {
+    .done(function(data) {
       navBarAuth();
       setName(data.user);
       switchToHomeView();
+      console.log(data);
     })
     .fail(function(data) {
-      alert('failed');
+      console.log("Failed to register.");
       formFail(data);
       navBarAnon();
     })

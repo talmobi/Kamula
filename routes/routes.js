@@ -44,18 +44,21 @@ module.exports = function(app, passport, mongoose) {
 			// no user was found, create a new user
 			console.log('creating new user');
 
-			var userData = tools.registerNewUser(req.user);
-			var userData = tools.toPlainUser(req.user);
+			tools.registerNewUser(req.user, function(userData) {
+				// success
+				var plainData = tools.toPlainUser( userData );
+				res.send(200, {message: "You successfully registered new user"});
 
-			// delete password before sending the user data
-			delete userData.password;
-			
-			// broadcast changes to all connected clients
-			io.sockets.emit('newuser', userData);
-
-			console.log(userData);
-
-			res.send(200, {message: "Created new user"});
+				// delete password before sending the user data
+				delete plainData.password;
+				
+				// broadcast changes to all connected clients
+				io.sockets.emit('newuser', userData);
+				console.log(userData);
+			}, function() {
+				// failed
+				res.send(400, {message: "Failed to register"});
+			});
 		} else {
 			res.send(403, {message: "A user with that name already exists."})
 		}
@@ -139,13 +142,14 @@ module.exports = function(app, passport, mongoose) {
 			console.log("ERROR IN USER");
 			console.log("req.user: " + req.user.lowercaseName);
 			console.log("data.user: " + data.user);
+			res.send(400, {message: 'Wrong user authenticated.'});
 			return;
 		}
 
 		// check tweet length etc
 		if (data.content.length > 200) {
 			console.log("TWEET LENGTH TOO LONG");
-			res.end(400, {message: 'Tweet length too long'});
+			res.send(400, {message: 'Tweet length too long'});
 			return;
 		}
 
@@ -172,6 +176,9 @@ module.exports = function(app, passport, mongoose) {
 				// Broadcast new tweet to clients
 				io.sockets.emit('newtweet', tweets );
 			});
+
+			res.send( 200, JSON.stringify({message: "saved new tweet successfully."}) );
+			return;
 		});
 
 		/*

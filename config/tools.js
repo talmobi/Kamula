@@ -5,17 +5,20 @@ var nameExcludePattern = /[^a-zA-Z0-9]+/;
 var maxTweetLength = 200;
 
 module.exports = {
-	registerNewUser: function(json) {
+	registerNewUser: function(json, success, fail) {
 		// add necessary user values to the data
 		// acquired from the client
 		var userData = this.toUserData(json);
 
 		// save the user to mongodb
 		userData.save(function(err) {
-			if (err) throw err;
+			if (err) {
+				throw err;
+				fail();
+			} else {
+				success(userData);
+			}
 		});
-
-		return userData;
 	},
 
 	toPlainUser: function(json) {
@@ -40,7 +43,6 @@ module.exports = {
 			password: json.password || "",
 			
 			lowercaseName: json.user.toLowerCase(),
-			_id: json._id
 		});
 
 		return userData;
