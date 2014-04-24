@@ -274,22 +274,12 @@
           console.log(data);
 
           var tweetList = $(".HOME .tweetList");
-          var tweetListli = $(".HOME .tweetList li");
-          console.log("got my new tweet back: " + data.content);
-          var string = '<li class="media" hidden="true"> \
-                            <a class="pull-left" href="#"> \
-                              <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
-                            </a> \
-                            <div class="media-body"> \
-                              <h4 class="media-heading">'+data.user.user+'</h4> \
-                              '+data.content+' \
-                            </div> \
-                          </li>';
-          tweetList.prepend(string);
-          // animate it a little bit
-          tweetListli.first().hide().show(600);
+          console.log("adding tweet to latest tweets: " + data.content);
+
+          addTweet("HOME", data.user.user, data.content);
 
           // keep at max 5 shown
+          var tweetListli = $(".HOME .tweetList li");
           if (tweetListli.length > 5) {
             var element = $(".HOME .tweetList li:last");
             element.hide(1200); // animate ftw
@@ -300,31 +290,14 @@
 
           // update profile tweets if it's my own tweet
           isAuth(function(user) {
-            if (user.user === data.user.user) { // check that it's a friend
+            if (user.user.toLowerCase() === data.user.user.toLowerCase()) {
               var tweetList = $(".PROFILE .tweetList");
-              var tweetListli = $(".PROFILE .tweetList li");
-              console.log("got my new tweet back: " + data.content);
-              var string = '<li class="media" hidden="true"> \
-                                <a class="pull-left" href="#"> \
-                                  <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
-                                </a> \
-                                <div class="media-body"> \
-                                  <h4 class="media-heading">'+data.user.user+'</h4> \
-                                  '+data.content+' \
-                                </div> \
-                              </li>';
-              tweetList.prepend(string);
-              // animate it a little bit
-              tweetListli.first().hide().show(600);
+              console.log("adding tweet to PROFILE tweet list: " + data.content);
 
-              // keep at max 5 shown
-              if (tweetListli.length > 5) {
-                var element = $(".PROFILE .tweetList li:last");
-                element.hide(1200); // animate ftw
-                setTimeout(function() {
-                  element.remove();
-                }, 1200);
-              }
+              addTweet("PROFILE", data.user.user, data.content);
+
+              var tweetListli = $(".PROFILE .tweetList li");
+
             } // if
           }); // isAuth();
 
@@ -342,7 +315,7 @@
 
         socket.on('usersOnline', function(data) {
           $("#usersOnlineId").text(data.usersOnline);
-          console.log("USERS ONLKINE");
+          console.log("USERS ONLINE");
         });
 
       });

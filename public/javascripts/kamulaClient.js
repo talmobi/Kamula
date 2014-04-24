@@ -81,10 +81,31 @@ var isAuth = function(authed, failed) {
      });
 }
 
+// insert tweet into tweet
+var addTweet = function(className, user, text) {
+  var tweetList = $("."+className+" .tweetList");
+
+  var string = '<li class="media" hidden> \
+                <a class="pull-left" href="#"> \
+                  <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
+                </a> \
+                <div class="media-body"> \
+                  <h4 class="media-heading">'+ (user || 'Anon') +'</h4> \
+                  '+text+' \
+                </div> \
+              </li>';
+
+  tweetList.prepend(string);
+
+  // get the new list
+  var tweetListli = $("."+className+" .tweetList li");
+  // animate it a little bit
+  tweetListli.first().hide().show(600);
+}
+
 // initialize jquery API funcitonality
 // for buttons etc
 init = function() {
-
 
   // test button
   $("#TestLink").click(function() {
@@ -114,6 +135,7 @@ init = function() {
     })
       .done(function() {
         navBarAnon();
+        switchToHomeView();
       })
       .fail(function() {
       });
@@ -131,7 +153,7 @@ init = function() {
     isAuth( function(selfjson) {
       // TODO verify tweet length etc
 
-      addTweet("PROFILE", selfjson.user, text);
+      //addTweet("PROFILE", selfjson.user, text);
 
       var data = {
         user: selfjson.user,
@@ -153,23 +175,6 @@ init = function() {
     });
     
   });
-
-  // insert tweet into tweet
-  var addTweet = function(className, user, text) {
-    var string = '<li class="media"> \
-                  <a class="pull-left" href="#"> \
-                    <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
-                  </a> \
-                  <div class="media-body"> \
-                    <h4 class="media-heading">'+ (user || 'Anon') +'</h4> \
-                    '+text+' \
-                  </div> \
-                </li>';
-
-      $("."+ className +" .tweetList").append( string );
-      var e = $("."+ className +" .tweetList .media-object").last();
-      e.hide().slideDown(slideTime);
-  }
 
   // login button pressed
   $(".loginButton").click( function() {
