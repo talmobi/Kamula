@@ -130,8 +130,10 @@ module.exports = function(app, passport, mongoose) {
 		*	json data format: {user: 'user', content: 'twiit msg'}
 		*/
 	app.post('/twiit', verify, function(req, res) {
-		var data = JSON.parse(req.body);
 		console.log("IN TWIIT");
+		console.log(req.body);
+
+		var data = JSON.parse(req.body);
 		console.log(req.body);
 
 		if (req.user.user !== data.user) {

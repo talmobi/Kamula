@@ -141,7 +141,7 @@ init = function() {
       // send the data to the server
       $.ajax({
         type: 'POST',
-        url: '/twiit/',
+        url: '/twiit',
         data: JSON.stringify(data),
         success: function(data) { alert('sent data: ' + data); },
         contentType: "application/json",

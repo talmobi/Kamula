@@ -25,7 +25,8 @@ module.exports = {
 			email: json.email || "",
 			password: json.password || "",
 			
-			lowercaseName: json.user.toLowerCase()
+			lowercaseName: json.user.toLowerCase(),
+			_id: json._id
 		};
 
 		return userData;
@@ -38,7 +39,8 @@ module.exports = {
 			email: json.email || "",
 			password: json.password || "",
 			
-			lowercaseName: json.user.toLowerCase()
+			lowercaseName: json.user.toLowerCase(),
+			_id: json._id
 		});
 
 		return userData;
