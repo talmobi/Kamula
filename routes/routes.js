@@ -133,12 +133,11 @@ module.exports = function(app, passport, mongoose) {
 		console.log("IN TWIIT");
 		console.log(req.body);
 
-		var data = JSON.parse(req.body);
-		console.log(req.body);
+		var data = req.body;
 
-		if (req.user.user !== data.user) {
+		if (req.user.lowercaseName !== data.user.toLowerCase()) {
 			console.log("ERROR IN USER");
-			console.log("req.user: " + req.user);
+			console.log("req.user: " + req.user.lowercaseName);
 			console.log("data.user: " + data.user);
 			return;
 		}
