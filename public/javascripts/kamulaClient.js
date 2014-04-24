@@ -155,7 +155,7 @@ init = function() {
   });
 
   // insert tweet into tweet
-  var addTweet = function(class, user, text) {
+  var addTweet = function(className, user, text) {
     var string = '<li class="media"> \
                   <a class="pull-left" href="#"> \
                     <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
@@ -166,8 +166,8 @@ init = function() {
                   </div> \
                 </li>';
 
-      $("."+ class +" .tweetList").append( string );
-      var e = $("."+ class +" .tweetList .media-object").last();
+      $("."+ className +" .tweetList").append( string );
+      var e = $("."+ className +" .tweetList .media-object").last();
       e.hide().slideDown(slideTime);
   }
 
