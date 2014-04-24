@@ -270,6 +270,9 @@
 
         // update latest tweets when new tweet has arrived.
         socket.on('newtweet', function(data) {
+          console.log("new tweet");
+          console.log(data);
+
           var tweetList = $(".HOME .tweetList");
           var tweetListli = $(".HOME .tweetList li");
           console.log("got my new tweet back: " + data.content);

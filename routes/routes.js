@@ -162,6 +162,16 @@ module.exports = function(app, passport, mongoose) {
 		// save the tweet to mongodb
 		tweetData.save(function(err) {
 			if (err) throw err;
+
+			console.log("Saved new tweet.");
+
+			var tweets = tweetData;
+
+			// populate the user name in the tweet user reference
+			mongoose.model('Tweet').populate(tweets, { path: 'user', select: 'user -_id' }, function(err, tweets) {
+				// Broadcast new tweet to clients
+				io.sockets.emit('newtweet', tweets );
+			});
 		});
 
 		/*
