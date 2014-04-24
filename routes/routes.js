@@ -61,7 +61,9 @@ module.exports = function(app, passport, mongoose) {
 		}
 	});
 
-	// check auth state
+	/**
+		* check auth state
+		*/
 	app.get('/auth', verify, function(req, res) {
 		var userData = tools.toPlainUser(req.user);
 		delete userData.password; // delete the password
@@ -81,7 +83,12 @@ module.exports = function(app, passport, mongoose) {
 		console.log(req.user);
 	});
 
-	// update
+
+
+
+	/**
+		* update
+		*/
 	app.post('/update', verify, function(req, res) {
 		console.log('in update');
 		if (!req.user) {
@@ -93,7 +100,11 @@ module.exports = function(app, passport, mongoose) {
 		console.log(req.user);
 	});
 
-	// add friend
+
+
+	/**
+		* add friend
+		*/
 	app.post('/addfriend', verify, function(req, res) {
 		// TODO
 		console.log('in /addfriend');
@@ -111,6 +122,57 @@ module.exports = function(app, passport, mongoose) {
 		// TODO
 		console.log('in /delete');
 
+	});
+
+
+	/**
+		*	Twiit POST
+		*	json data format: {user: 'user', content: 'twiit msg'}
+		*/
+	app.post('/twiit', verify, function(req, res) {
+		var data = JSON.parse(req.body);
+		console.log("IN TWIIT");
+		console.log(req.body);
+
+		if (req.user.user !== data.user) {
+			console.log("ERROR IN USER");
+			console.log("req.user: " + req.user);
+			console.log("data.user: " + data.user);
+			return;
+		}
+
+		// check tweet length etc
+		if (data.content.length > 200) {
+			console.log("TWEET LENGTH TOO LONG");
+			res.end(400, {message: 'Tweet length too long'});
+			return;
+		}
+
+		console.log(req.user);
+
+		// create the tweet database object
+		var Tweet = mongoose.model('Tweet');
+		var tweetData = new Tweet({
+			content: data.content, // the contents of the tweet
+			user: req.user._id, // the authoring user
+			comments: [] // no comments on a newly created tweet
+		});
+
+		// save the tweet to mongodb
+		tweetData.save(function(err) {
+			if (err) throw err;
+		});
+
+		/*
+		$.ajax({
+		    type: 'POST',
+		    url: '/form/',
+		    data: '{"name":"jonas"}', // or JSON.stringify ({name: 'jonas'}),
+		    success: function(data) { alert('data: ' + data); },
+		    contentType: "application/json",
+		    dataType: 'json'
+		});
+		*/
 	});
 
 	/**

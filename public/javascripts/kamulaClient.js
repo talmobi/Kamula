@@ -128,23 +128,34 @@ init = function() {
   $(".TwiitWritePanel button").click( function() {
     var text = $(".TwiitWritePanel input").val();
     
-    var string = '<li class="media"> \
-                  <a class="pull-left" href="#"> \
-                    <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
-                  </a> \
-                  <div class="media-body"> \
-                    <h4 class="media-heading">'+ (userName || 'Anon') +'</h4> \
-                    '+text+' \
-                  </div> \
-                </li>';
+    isAuth( function(selfjson) {
+      // TODO verify tweet length etc
 
-      $(".PROFILE .tweetList").append( string );
-      var e = $(".PROFILE .tweetList .media-object").last();
-      e.hide().slideDown(slideTime);
+      addTweet("PROFILE", selfjson.user, text);
+
+      var data = {
+        user: selfjson.user,
+        content: text
+      };
+
+      // send the data to the server
+      $.ajax({
+        type: 'POST',
+        url: '/twiit/',
+        data: JSON.stringify(data),
+        success: function(data) { alert('sent data: ' + data); },
+        contentType: "application/json",
+        dataType: 'json'
+      });
+
+    }, function() {
+      alert("Not logged in.");
+    });
+    
   });
 
   // insert tweet into tweet
-  var inserTweet = function(class, user, text) {
+  var addTweet = function(class, user, text) {
     var string = '<li class="media"> \
                   <a class="pull-left" href="#"> \
                     <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
