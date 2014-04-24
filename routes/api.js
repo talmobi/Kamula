@@ -52,8 +52,7 @@ module.exports = function(app, verify, mongoose) {
 					.exec(function (err, tweetsList) {
 						if (err) console.log("Error getting tweets");
 
-						// populate the friends list, this is fine using the mongoose populate command
-						// since friends are one way direction.
+						// TODO populate friends list
 
 						console.log(doc);
 

@@ -146,6 +146,29 @@
         </div> <!-- PROFILE -->
 
 
+        <!-- Add Friend view -->
+        <div class="addFriendView myView ADDFRIEND" hidden>
+        <!-- list of users that are not friends -->
+          <div id="users" class="col-sm-4">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">Lisää Kaveri</h3>
+              </div>
+              <div class="panel-body">
+                <div class="list-group userList" id="userList">
+
+                  <!--<a href="#" class="list-group-item">Blinky</a> -->
+                  <!-- jqeury will add users here -->
+
+                </div>
+              </div>
+            </div>
+          </div> <!-- id=users -->
+        </div> <!-- Add Friend -->
+
+
+
+
         <!-- Register view -->
         <div class="registerView myView REG" hidden>
           <div class="col-sm-4"></div>

@@ -8,7 +8,8 @@ var StateEnum = {
   HOME: "HOME",
   REG: "REG",
   LOG: "LOG",
-  PROFILE: "PROFILE"
+  PROFILE: "PROFILE",
+  ADDFRIEND: "ADDFRIEND"
 };
 
 var state = StateEnum.HOME;

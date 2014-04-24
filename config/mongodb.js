@@ -34,6 +34,9 @@ module.exports = function(mongoose) {
 			type: Schema.Types.ObjectId, ref: 'User'
 		}],
 
+		// TODO this field should NOT be necessary
+		// (we don't want to keep track of two pointers to the same data (may go out of sync)).
+		// instead we can just search and insert the desired data.
 		tweets: [{
 			type: Schema.Types.ObjectId, ref: 'Tweet'
 		}]
@@ -42,6 +45,8 @@ module.exports = function(mongoose) {
 	model('Tweet', {
 		content: String,
 		user: { type: Schema.Types.ObjectId, ref: 'User' },
+
+		// TODO this field should NOT be necessary
 		comments: [{
 			type: Schema.Types.ObjectId, ref: 'Comment'
 		}]
