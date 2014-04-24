@@ -185,6 +185,8 @@ module.exports = function(app, passport, mongoose) {
 		res.redirect('/');
 	});
 
+
+	// get everything
 	app.get('/find', function(req, res) {
 		mongoose.model('User').find(function(err, users){
 			mongoose.model('User').populate(users, {path: 'tweets'}, function(err, users) {
@@ -193,6 +195,8 @@ module.exports = function(app, passport, mongoose) {
 		});
 	});
 
+
+	// get all users
 	app.get('/users', function(req, res) {
 		var projection = {
 			user: true,
@@ -204,6 +208,17 @@ module.exports = function(app, passport, mongoose) {
 			if (err) throw err;
 			res.send(users);
 		});
+	});
+
+	// get all tweets
+	app.get('/tweets', function(req, res) {
+		mongoose.model('Tweet').find().sort({_id: -1}).exec(function(err, tweets) {
+				if (err) throw err;
+
+				mongoose.model('Tweet').populate(tweets, { path: 'user', select: 'user -_id' }, function(err, tweets) {
+					res.send(tweets);
+				});
+			});
 	});
 
 	app.get('/latest', function(req, res) {
