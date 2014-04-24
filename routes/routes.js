@@ -114,7 +114,67 @@ module.exports = function(app, passport, mongoose) {
 		if (!req.user) {
 			res.send( 404, { message: "Not authorized" } );
 		} else {
-			res.send( 200, { message: "Logged in successfully!"});
+
+			var data = req.body;
+
+			mongoose.model('User').findOne({lowercaseName: data.user.toLowerCase()})
+				.exec(function (err, userDoc) {
+					if (err) res.send(404);
+					mongoose.model('User').findOne({lowercaseName: data.friend.toLowerCase()})
+						.exec(function (err, friendDoc) {
+							if (err) {
+								res.send(404);
+								throw err;
+								return;
+							}
+
+							console.log("userDocId: " + userDoc._id);
+							console.log("friendDocId: " + friendDoc._id);
+
+							if (userDoc._id == data.user_id && friendDoc._id == data.friend_id) {
+								// check that they already aren't friends
+								for (var f in userDoc.friends) {
+									if (f === friendDoc._id) {
+										res.send(404, {message: "You are already friends with " + friendDoc.user});
+										console.log("Add friend failed - they are already friends.");
+										return;
+									}
+								}
+								
+								// friend them
+								userDoc.friends.push(friendDoc._id);
+								friendDoc.friends.push(userDoc._id);
+
+								var opts = {
+									multi: false
+								};
+								// update the documents
+								mongoose.model('User').update( {_id: userDoc._id}, {friends: userDoc.friends}, opts, function(err) {
+									if (err) {
+										res.send(404);
+										throw err;
+										return;
+									}
+
+									mongoose.model('User').update( {_id: friendDoc._id}, {friends: friendDoc.friends}, opts, function(err) {
+										if (err) {
+											res.send(404);
+											throw err;
+											return;
+										}
+
+										res.send( 200, {friend: friendDoc.user});
+										console.log("Successfully friended " + userDoc.user + " and " + friendDoc.user);
+									});
+								});
+							} else {
+								console.log("ADD FRIEND ID ERRORS");
+								console.log("user_id: " + data.user_id);
+								console.log("friend_id: " + data.friend_id);
+								res.send(404);
+							}
+						});
+				});
 		}
 
 		console.log(req.user);

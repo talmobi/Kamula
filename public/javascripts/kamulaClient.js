@@ -128,7 +128,7 @@ init = function() {
   });
 
   $("#HomeLink").click( function() {
-    switchToHomeView()
+    switchToMainPage()
   });
 
   $("#LogoutLink").click( function() {
@@ -145,6 +145,90 @@ init = function() {
   // Profile button
   $("#ProfileLink").click( function() {
     switchToProfileView();
+  });
+
+  // Add Friend button
+  $("#AddFriendLink").click( function() {
+
+    // get and populate the user list without users
+    // who are already your friends
+    isAuth(function(selfjson) {
+
+      // get full list of users and 
+      $.getJSON("/users", function( data ) {
+        $.each( data, function( key, val) {
+
+          var skip = false;
+          // skip this if it is a friend
+          for (var i = 0; i < selfjson.friends.length; i++) {
+            if (val.user.toLowerCase() === selfjson.friends[i].user.toLowerCase()) {
+              skip = true;
+              break;
+            }
+          }
+
+          if (!skip) {
+            // create the element
+            var str = '<a href="#" class="list-group-item">'+ (val.name || val.user) +'</a>';
+            // add it to the list
+            $(".ADDFRIEND .userList").append( str + '<br>');
+            // add click functionality
+            $(".ADDFRIEND .userList a:last").click(function() {
+
+              var data = {
+                user: selfjson.user,
+                user_id: selfjson._id,
+                friend: val.user,
+                friend_id: val._id
+              };
+
+              alert(JSON.stringify(data));
+
+              $.ajax( {
+                type: 'POST',
+                url: '/addfriend',
+                data: JSON.stringify(data),
+                success: function(data) {
+                  console.log("Successfully Added a friend!!");
+                  console.log(data);
+                  var str = '<a href="#" class="list-group-item">'+ (data.friend) +'</a>';
+                  $(".friendsPanel .friendsList").prepend(str + '<br>');
+                  $(".friendsPanel .friendsList a:first").hide().show(slideTime);
+                },
+                error: function() {
+                  alert("Error adding friend.");
+                },
+                contentType: "application/json",
+                dataType: 'json'
+              });
+
+              /*
+              $.ajax({
+                type: 'POST',
+                url: '/twiit',
+                data: JSON.stringify(data),
+                success: function(data) { 
+                  console.log('successfully sent tweet');
+                  console.log(data);
+                 },
+                error: function() {console.log("Error sending tweet.")},
+                contentType: "application/json",
+                dataType: 'json'
+              });
+              */
+            });
+          }
+        });
+
+        $(".ADDFRIEND .userList").show(slideTime);
+      });
+
+    }, function() {
+      alert("Not logged in.");
+      switchToLoginView();
+    });
+
+    switchToAddFriendView();
   });
 
   // Writing tweet
@@ -195,7 +279,7 @@ init = function() {
     .done(function() {
       navBarAuth();
       setName(dataOut.user);
-      switchToHomeView();
+      switchToMainPage();
     })
     .fail(function(data) {
       navBarAnon();
@@ -219,7 +303,7 @@ init = function() {
     .done(function(data) {
       navBarAuth();
       setName(data.user);
-      switchToHomeView();
+      switchToMainPage();
       console.log(data);
     })
     .fail(function(data) {
@@ -264,6 +348,20 @@ pageInit = function() {
   });
 }
 
+var loadFriendsList = function(friends) {
+  var flist = $(".friendsPanel .friendsList");
+  flist.empty();
+
+  for (var f in friends) {
+    var str = '<a href="#" class="list-group-item">'+ (data.friend) +'</a>';
+    flist.prepend(str + '<br>');
+    flist.first().click(function() {
+      
+    });
+  }
+
+}
+
 navBarAnon = function() {
   $("#anonNav").show();
   $("#authNav").hide();
@@ -279,17 +377,26 @@ setName = function(name) {
 
 // helper state switching hooks
 switchToMainPage = function() {
-  isAuth(function() {
+  isAuth(function(data) {
     // hide content for anons
     navBarAuth();
 
+    $(".HOME .anonPanel").hide();
+    $(".HOME .friendsPanel").show();
+
+    // load friends list
+
+    loadFriendsList(data.friends);
+
     // logged in
-    switchToProfileView();
+    switchToHomeView();
   }, function() {
     // show content for anons
     navBarAnon();
 
-    // not logged in
+    $(".HOME .anonPanel").show();
+    $(".HOME .friendPanel").hide();
+
     switchToHomeView();
   });
 }
@@ -308,4 +415,9 @@ switchToLoginView = function() {
 
 switchToProfileView = function() {
   switchTo(StateEnum.PROFILE);
+  $(".HOME .friendsPanel").show();
+}
+
+switchToAddFriendView = function() {
+  switchTo(StateEnum.ADDFRIEND);
 }

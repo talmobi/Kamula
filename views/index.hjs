@@ -32,13 +32,17 @@
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+              <!-- NAVBAR FOR ANON USERS -->
               <ul class="nav navbar-nav" id="anonNav" hidden>
                 <li><a id="RegisterLink" href="#">Register</a></li>
                 <li><a id="LoginLink" href="#">Login</a></li>
               </ul>
+
+              <!-- NAVBAR FOR LOGGED IN USERS -->
               <ul class="nav navbar-nav" id="authNav" hidden>
                 <li><a id="LogoutLink" href="#">Logout</a></li>
                 <li><a id="ProfileLink" href="#">Profile</a></li>
+                <li><a id="AddFriendLink" href="#">Add Friend</a></li>
               </ul>
 
               <!-- test navs -->
@@ -60,12 +64,14 @@
 
         <!-- Anon view -->
         <div class="anonView myView HOME" hidden>
-        <!-- list of users -->
-          <div id="users" class="col-sm-4">
+
+          <!-- list of users for ANON -->
+          <div id="users" class="col-sm-4 anonPanel">
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <h3 class="panel-title">Käyttäjät</h3>
               </div>
+
               <div class="panel-body">
                 <div class="list-group userList" id="userList">
 
@@ -74,8 +80,28 @@
 
                 </div>
               </div>
+
             </div>
-          </div>
+          </div> <!-- list of users for ANON -->
+
+          <!-- list of friends for LOGGED INUSERS -->
+          <div id="users" class="col-sm-4 friendsPanel" hidden>
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">Kaverit</h3>
+              </div>
+
+              <div class="panel-body">
+                <div class="list-group friendsList">
+
+                  <!--<a href="#" class="list-group-item">Blinky</a> -->
+                  <!-- jqeury will add users here -->
+
+                </div>
+              </div>
+
+            </div>
+          </div> <!-- list of friends for LOGGED INUSERS -->
 
           <!-- Recent tweets view -->
           <div class="col-sm-8">
@@ -95,22 +121,25 @@
 
         <!-- Profile view -->
         <div class="profileView myView PROFILE" hidden>
-        <!-- list of users -->
-          <div id="users" class="col-sm-4">
+
+          <!-- list of friends for LOGGED INUSERS -->
+          <div id="users" class="col-sm-4 friendsPanel">
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <h3 class="panel-title">Kaverit</h3>
               </div>
+
               <div class="panel-body">
-                <div class="list-group userList" id="userList">
+                <div class="list-group friendsList">
 
                   <!--<a href="#" class="list-group-item">Blinky</a> -->
                   <!-- jqeury will add users here -->
 
                 </div>
               </div>
+
             </div>
-          </div>
+          </div> <!-- list of friends for LOGGED INUSERS -->
 
           <!-- Recent own tweets view -->
           <div class="col-sm-8">

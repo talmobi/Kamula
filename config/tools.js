@@ -29,6 +29,8 @@ module.exports = {
 			password: json.password || "",
 			
 			lowercaseName: json.user.toLowerCase(),
+			friends: json.friends,
+			
 			_id: json._id
 		};
 
