@@ -31,25 +31,25 @@ module.exports = function(mongoose) {
 		lowercaseName: String,
 
 		friends: [{
-			type: Schema.ObjectId, ref: 'User'
+			type: Schema.Types.ObjectId, ref: 'User'
 		}],
 
 		tweets: [{
-			type: Schema.ObjectId, ref: 'Tweet'
+			type: Schema.Types.ObjectId, ref: 'Tweet'
 		}]
 	});
 
 	model('Tweet', {
 		content: String,
-		user: { type: Schema.ObjectId, ref: 'User' },
+		user: { type: Schema.Types.ObjectId, ref: 'User' },
 		comments: [{
-			type: Schema.ObjectId, ref: 'Comment'
+			type: Schema.Types.ObjectId, ref: 'Comment'
 		}]
 	});
 
 	model('Comment', {
 		content: String,
-		user: { type: Schema.ObjectId, ref: 'User' },
-		tweet: { type: Schema.ObjectId, ref: 'Tweet' }
+		user: { type: Schema.Types.ObjectId, ref: 'User' },
+		tweet: { type: Schema.Types.ObjectId, ref: 'Tweet' }
 	})
 }

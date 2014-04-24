@@ -171,6 +171,7 @@ module.exports = function(app, passport, mongoose) {
 
 			var tweets = tweetData;
 
+			// send the tweet (and populate it) to all clients
 			// populate the user name in the tweet user reference
 			mongoose.model('Tweet').populate(tweets, { path: 'user', select: 'user -_id' }, function(err, tweets) {
 				// Broadcast new tweet to clients
@@ -206,10 +207,8 @@ module.exports = function(app, passport, mongoose) {
 
 	// get everything
 	app.get('/find', function(req, res) {
-		mongoose.model('User').find(function(err, users){
-			mongoose.model('User').populate(users, {path: 'tweets'}, function(err, users) {
-				res.send(users);
-			});
+		mongoose.model('User').find().populate('tweets').exec(function(err,users) {
+			res.send(users);
 		});
 	});
 
@@ -236,6 +235,15 @@ module.exports = function(app, passport, mongoose) {
 				mongoose.model('Tweet').populate(tweets, { path: 'user', select: 'user -_id' }, function(err, tweets) {
 					res.send(tweets);
 				});
+			});
+	});
+
+	// get all tweets barebone (withotu population, only object Id's for users)
+	app.get('/tweetsbare', function(req, res) {
+		mongoose.model('Tweet').find().sort({_id: -1}).exec(function(err, tweets) {
+				if (err) throw err;
+
+				res.send(tweets);
 			});
 	});
 

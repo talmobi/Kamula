@@ -41,16 +41,34 @@ module.exports = function(app, verify, mongoose) {
 			if (err) throw err;
 
 			if (doc) { // exists
-				var data = {
-					user: doc.user,
-					name: doc.name,
-					email: doc.email,
 
-					friends: doc.friends,
-					tweets: doc.tweets
-				}
+				// populate the doc with tweets list manually.
+				// we won't use the populate command since it would require us
+				// to push reference to the User db Object (and keep track of two sets of pointers)
+				// that may go out of sync. Easier and cleaner to just get the data we need and
+				// send it back as a json object.
+				 mongoose.model('Tweet')
+					.find({ user: doc._id })
+					.exec(function (err, tweetsList) {
+						if (err) console.log("Error getting tweets");
 
-				res.send( data );
+						// populate the friends list, this is fine using the mongoose populate command
+						// since friends are one way direction.
+
+						console.log(doc);
+
+						var data = {
+							user: doc.user,
+							name: doc.name,
+							email: doc.email,
+
+							friends: doc.friends,
+							tweets: tweetsList,
+							_id: doc._id
+						}
+
+						res.send( data );
+					});
 			} else {	// doesn't exists
 				res.send( 404, { message: "That user doesn't exist.", errorSource: "" } );
 			}
