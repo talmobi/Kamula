@@ -1,5 +1,7 @@
 // adds dynamic jquery functionality to the client side page
 
+var userName = '';
+
 var slideTime = 600;
 
 var StateEnum = {
@@ -68,6 +70,7 @@ var isAuth = function(authed, failed) {
     var json = JSON.parse(data);
     authed(json);
     setName(json.user);
+    userName = json.user;
     $("#anonNav").hide();
     $("#authNav").show();
   })
@@ -124,9 +127,38 @@ init = function() {
   // Writing tweet
   $(".TwiitWritePanel button").click( function() {
     var text = $(".TwiitWritePanel input").val();
-    alert(text);
-    // TODO bind data to this
+    
+    var string = '<li class="media"> \
+                  <a class="pull-left" href="#"> \
+                    <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
+                  </a> \
+                  <div class="media-body"> \
+                    <h4 class="media-heading">'+ (userName || 'Anon') +'</h4> \
+                    '+text+' \
+                  </div> \
+                </li>';
+
+      $(".PROFILE .tweetList").append( string );
+      var e = $(".PROFILE .tweetList .media-object").last();
+      e.hide().slideDown(slideTime);
   });
+
+  // insert tweet into tweet
+  var inserTweet = function(class, user, text) {
+    var string = '<li class="media"> \
+                  <a class="pull-left" href="#"> \
+                    <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
+                  </a> \
+                  <div class="media-body"> \
+                    <h4 class="media-heading">'+ (user || 'Anon') +'</h4> \
+                    '+text+' \
+                  </div> \
+                </li>';
+
+      $("."+ class +" .tweetList").append( string );
+      var e = $("."+ class +" .tweetList .media-object").last();
+      e.hide().slideDown(slideTime);
+  }
 
   // login button pressed
   $(".loginButton").click( function() {
