@@ -235,8 +235,17 @@ module.exports = function(app, passport, mongoose) {
 			// send the tweet (and populate it) to all clients
 			// populate the user name in the tweet user reference
 			mongoose.model('Tweet').populate(tweets, { path: 'user', select: 'user -_id' }, function(err, tweets) {
+				var tweet = {
+					content: tweets.content,
+					user: tweets.user,
+					_id: tweets._id,
+					comments: tweets.comments,
+					userId: req.user._id	// id hook for client side friends list 
+																// since tweet.user (ObjectID) is overridden by populate
+				}
+
 				// Broadcast new tweet to clients
-				io.sockets.emit('newtweet', tweets );
+				io.sockets.emit('newtweet', tweet);
 			});
 
 			res.send( 200, JSON.stringify({message: "saved new tweet successfully."}) );
@@ -374,8 +383,6 @@ module.exports = function(app, passport, mongoose) {
 			res.send(404, {message: "must be logged in to see friendly tweets"});
 		}
 	});
-
-
 
 	// Views (hogan)
 	app.get('/', function(req, res) {

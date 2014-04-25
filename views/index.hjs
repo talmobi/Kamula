@@ -138,42 +138,13 @@
 
 
 
+
+
         <!-- Profile view -->
         <div class="profileView myView PROFILE" hidden>
 
-          <!-- list of friends  -->
-          <div id="users" class="col-sm-4 friendsPanel">
-            <div class="panel panel-primary">
-              <div class="panel-heading">
-                <h3 class="panel-title">Kaverit</h3>
-              </div>
-
-              <div class="panel-body">
-                <div class="list-group friendsList">
-                    <!--<a href="#" class="list-group-item">Blinky</a> -->
-                    <!-- jqeury will add users here -->
-                </div>
-              </div>
-
-            </div>
-          </div> <!-- list of friends -->
-
-          <!-- Recent tweets view -->
-          <div class="col-sm-8">
-            <div class="panel panel-primary">
-              <div class="panel-heading">
-                <h3 class="panel-title profileName">Omat Twiitit</h3>
-              </div>
-              <div class="panel-body">
-                <ul class="media-list tweetList">
-                  <!-- Sample twiitti, later to be added from db with jquery -->
-                </ul>
-              </div>
-            </div>
-          </div> <!-- Recent own/friends tweets view -->
-
           <!-- write new tweet ONLY FOR SELF USER -->
-          <div class="col-sm-8 WriteTweetDiv" hidden>
+          <div class="col-sm-4 WriteTweetDiv" hidden>
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <h3 class="panel-title">Kirjoita Twiitti</h3>
@@ -187,9 +158,29 @@
                 </div>
               </div>
             </div>
-          </div> <!-- write new tweet -->
+          </div> <!-- write new tweet ONLY FOR SELF USER -->
 
-        </div> <!-- PROFILE -->
+
+          <!-- Recent profile op tweets view -->
+          <div class="col-sm-8">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title profileName">Omat Twiitit</h3>
+              </div>
+              <div class="panel-body">
+                <ul class="media-list tweetList">
+                  <!-- Sample twiitti, later to be added from db with jquery -->
+                </ul>
+              </div>
+            </div>
+          </div> <!-- Recent profile op tweets view -->
+
+
+        </div> <!-- PROFILE view -->
+
+
+
+
 
 
 
@@ -338,14 +329,14 @@
         });
 
         // update latest tweets when new tweet has arrived.
-        socket.on('newtweet', function(data) {
+        socket.on('newtweet', function(tweet) {
           console.log("new tweet");
-          console.log(data);
+          console.log(tweet);
 
           var tweetList = $(".HOME .tweetList");
-          console.log("adding tweet to latest tweets: " + data.content);
+          console.log("adding tweet to latest tweets: " + tweet.content);
 
-          addTweet("HOME", data.user.user, data.content);
+          addTweet("HOME", tweet.user.user, tweet.content);
 
           // keep at max 5 shown
           var tweetListli = $(".HOME .tweetList li");
@@ -358,10 +349,38 @@
           }
 
           // update profile tweets if it's the one I'm currently viewing
-          if (currentProfile.toLowerCase() == data.user.user.toLowerCase()) {
-            console.log("adding tweet to PROFILE tweet list: " + data.content);
-            addTweet("PROFILE", data.user.user, data.content);
+          if (currentProfile.toLowerCase() == tweet.user.user.toLowerCase()) {
+            console.log("adding tweet to PROFILE tweet list: " + tweet.content);
+            addTweet("PROFILE", tweet.user.user, tweet.content);
           } // if
+
+          // update tuoroeimmat kavereitten twiits if a user posted it
+          isAuth(function(data) {
+            var friends = data.friends;
+            var shouldLimit = false;
+            for (var i = 0; i < friends.length; i++) {
+              var f = friends[i];
+              console.log("in newtweet isAuth");
+              console.log("f: " + f + ", tweet: " + JSON.stringify(tweet) );
+              if (f == tweet.userId) {
+                addTweet("MAIN", tweet.user.user, tweet.content);
+                shouldLimit = true;
+                break; // only 1 tweet, no need to loop through rest of friends
+              }
+            }
+
+            if (shouldLimit) {
+              // keep at max 5 shown
+              var tweetListli = $(".MAIN .tweetList li");
+              if (tweetListli.length > 5) {
+                var element = $(".MAIN .tweetList li:last");
+                element.hide(1200); // animate ftw
+                setTimeout(function() {
+                  element.remove();
+                }, 1200);
+              }
+            }
+          });
 
         });
 

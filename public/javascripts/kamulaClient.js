@@ -216,7 +216,6 @@ init = function() {
                   e.click(function() {
                     var p = this.text;
                     switchToProfileOf(p);
-                    console.log("Switching to friend profile: " + p);
                   });
                 },
                 error: function() {
@@ -335,7 +334,6 @@ pageInit = function() {
       $(".HOME .userList a").last().click(function() {
         var p = this.text;
         switchToProfileOf(p);
-        console.log("Switching to priofile of: " + p);
       });
     });
 
@@ -381,7 +379,6 @@ var loadFriendsList = function(self) {
       $(".MAIN .userList a").first().click(function() {
         var p = this.text;
         switchToProfileOf(p);
-        console.log("Switching to friend profile: " + p);
       });
     }
   })
@@ -467,9 +464,38 @@ switchToLoginView = function() {
   switchTo(StateEnum.LOG);
 }
 
+var loadProfileTweetsAndFriends = function(userName) {
+  // load profile tweets
+  $.get('/api/users/' + userName, function(data) {
+    var tweets = data.tweets;
+
+    for (var i = 0; i < tweets.length; i++) {
+      var tweet = tweets[i];
+      addTweet("PROFILE", userName, tweet.content);
+    }
+
+    var friends = data.friends;
+
+    for (var i = 0; i < friends.length; i++) {
+
+    }
+  })
+    .fail( function() {
+      console.log("Failed to updated proifle tweets")
+    });
+}
+
 // switch to users own profile
 switchToProfileView = function() {
+  currentProfile = userName;
   // Show my own tweets
+  $(".WriteTweetDiv").show();
+
+  // load profile tweets and between two ferns
+  loadProfileTweetsAndFriends(userName); // global userName variable
+
+  // Load users friends
+
 
   switchTo(StateEnum.PROFILE);
 }
@@ -479,6 +505,12 @@ switchToAddFriendView = function() {
 }
 
 // switch to ANOTHER users profile
-switchToProfileOf = function() {
+switchToProfileOf = function(user) {
+  currentProfile = user;
   //
+  loadProfileTweetsAndFriends(user);
+
+
+  $(".WriteTweetDiv").hide();
+  console.log("Switching to profile of: " + user)
 }
