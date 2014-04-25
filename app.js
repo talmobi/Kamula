@@ -54,12 +54,13 @@ app.httpServer.listen(app.get('port'), function() {
 
 
 // do tests
-var tobi = require('tobi');
-var browser = tobi.createBrowser(80, '127.0.0.1');
+//var tobi = require('tobi');
+//var browser = tobi.createBrowser(80, '127.0.0.1');
 
 var jq = require('jquery');
 
 // check registration
+/*
 browser.get('/', function (res, jq) {
 	console.log("doing tests.");
 
@@ -77,3 +78,4 @@ browser.get('/', function (res, jq) {
 
 	console.log("Tests finished.");
 });
+*/

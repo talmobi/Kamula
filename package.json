@@ -13,7 +13,7 @@
     "socket.io": "*",
     "less-middleware": "~0.1.15",
     "mongoose": "^3.8.8",
-    "tobi": "latest",
+    "soda": "latest",
     "jquery": "latest"
   }
 }
