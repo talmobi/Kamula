@@ -4,6 +4,8 @@ var userName = '';
 var lastLoginState = false;
 var currentProfile = '';
 
+var fullUserList = [];
+
 var slideTime = 600;
 
 var StateEnum = {
@@ -108,7 +110,7 @@ var addTweet = function(className, user, text, tweetId) {
                 <a class="pull-left" href="#"> \
                   <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
                 </a> \
-                <div class="media-body"> \
+                <div class="media-body" tweetId="'+tweetId+'"> \
                   <h4 class="media-heading">'+ (user || 'Anon') +'</h4> \
                   '+text+' \
                 </div> \
@@ -330,7 +332,10 @@ init = function() {
 pageInit = function() {
   // get users list through api
   $.getJSON("/users", function( data ) {
+    fullUserList = [];
     $.each( data, function( key, val) {
+      fullUserList.push(val);
+
       console.log(val);
       var str = '<a href="#" class="list-group-item">'+ (val.name || val.user) +'</a>';
       $(".HOME .userList").append( str + '<br>');
@@ -486,11 +491,26 @@ var newComment = function(user, content) {
         return comment;
       }
 
+var getNameOfId = function(id) {
+  for (var i = 0; i < fullUserList.length; i++) {
+    var user = fullUserList[i];
+    if (user._id == id) {
+      return user.user;
+    }
+  }
+}
 
 var loadProfileTweetsAndComments = function(userName) {
+  if (!userName) {
+    userName = currentProfile;
+  }
+
+  $(".PROFILE tweetList").empty();
+
+  console.log("username: " + userName);
   // load profile tweets
-  $.get('/api/users/' + userName, function(data) {
-    var tweets = data.tweets;
+  $.get('/tweets/' + userName, function(data) {
+    var tweets = data;
 
     for (var i = 0; i < tweets.length; i++) {
       var tweet = tweets[i];
@@ -500,13 +520,22 @@ var loadProfileTweetsAndComments = function(userName) {
       // that are shown when the tweet is clicked
       var div = '<div class="commentDiv '+ tweet._id +'" hidden>';
 
-      console.log("e.id: " + e.id);
-
       var comments = tweet.comments;
-      for (var n = 0; n < comments + 3; n++) {
-        var comment = newComment("Anon", "Sample comment.");
+      for (var n = 0; n < comments.length; n++) {
+        var name = getNameOfId(comments[n].user);
+
+        var comment = newComment(name, comments[n].content );
         div += comment;
       }
+
+      // add write new comment box if user is logged in
+      if (lastLoginState) {
+        div += '<div class="writeComment">'
+        div += '<input type="text" placeholder="write comment">'
+        div += '   <button tweetId="'+tweet._id+'" type="submit" class="btn btn-primary">Comment!</button>'
+        div += '</div>';
+      }
+
       div += '</div>'
 
       e.append(div);
@@ -515,17 +544,63 @@ var loadProfileTweetsAndComments = function(userName) {
 
       var tid = tweet._id;
       // show/hide comments
-      e.click( function() {
+      $("." + tid + " div.media-body").click( function() {
+        var tid = this.getAttribute("tweetId");
         console.log(this);
-        var tid = this.getAttribute('tweetId');
         console.log("CLICK: " + tid);
         $(".commentDiv." + tid).toggle(slideTime);
       });
-    }
 
-    var friends = data.friends;
+      /*
+            var string = '<div class="tweet"><li class="media '+tweetId+'" hidden tweetId="'+tweetId+'"> \
+                <a class="pull-left" href="#"> \
+                  <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
+                </a> \
+                <div class="media-body"> \
+                  <h4 class="media-heading">'+ (user || 'Anon') +'</h4> \
+                  '+text+' \
+                </div> \
+              </li></div>';
+      */
 
-    for (var i = 0; i < friends.length; i++) {
+      // override last click event for the write button
+      if (lastLoginState) {
+        // add button functionality for writing comment
+        $(".commentDiv." + tid + " .writeComment button").click(function() {
+          var tid = this.getAttribute("tweetId");
+          var input = $(".commentDiv." + tid + " .writeComment input");
+          var text = input.val();
+
+          if (text.length < 1)
+            return;
+
+          var data = {
+            tweetId: tid,
+            content: text
+          }
+
+          // make ajax post request
+          $.ajax( {
+            type: 'POST',
+            url: '/addcomment',
+            data: JSON.stringify(data),
+            success: function(data) {
+              console.log("Successfully Added a comment!!");
+              console.log(data);
+              var str = newComment(userName, text);
+              $(".commentDiv." + tid).prepend( str );
+            },
+            error: function() {
+              alert("You need to be logged in to comment.");
+            },
+            contentType: "application/json",
+            dataType: 'json'
+          });
+
+          console.log("COMMENT BUTTON CLICKED!!: " + text);
+          input.val('');
+        });
+      }
 
     }
   })

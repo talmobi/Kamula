@@ -37,14 +37,14 @@ module.exports = function(app, passport, mongoose) {
 	/**
 		*	Registration and Login (Test)
 		*/
-	app.post('/register', passport.authenticate('local-register'), function(req, res) {
+	app.post('/register', passport.authenticate('local-register'), function (req, res) {
 		console.log('in register');
 
 		if (req.user) {
 			// no user was found, create a new user
 			console.log('creating new user');
 
-			tools.registerNewUser(req.user, function(userData) {
+			tools.registerNewUser(req.user, function (userData) {
 				// success
 				var plainData = tools.toPlainUser( userData );
 				res.send(200, {message: "You successfully registered new user"});
@@ -75,7 +75,7 @@ module.exports = function(app, passport, mongoose) {
 		res.send(200, JSON.stringify( userData ));
 	});
 
-	app.post('/login', passport.authenticate('local-login'), function(req, res) {
+	app.post('/login', passport.authenticate('local-login'), function (req, res) {
 		console.log('in login');
 		if (!req.user) {
 			res.send( 404, { message: "That user doesn't exist.", errorSource: "" } );
@@ -92,7 +92,7 @@ module.exports = function(app, passport, mongoose) {
 	/**
 		* update
 		*/
-	app.post('/update', verify, function(req, res) {
+	app.post('/update', verify, function (req, res) {
 		console.log('in update');
 		if (!req.user) {
 			res.send( 404, { message: "Not authorized" } );
@@ -150,14 +150,14 @@ module.exports = function(app, passport, mongoose) {
 								};
 
 								// update the documents
-								mongoose.model('User').update( {_id: userDoc._id}, {friends: userDoc.friends}, opts, function(err) {
+								mongoose.model('User').update( {_id: userDoc._id}, {friends: userDoc.friends}, opts, function (err) {
 									if (err) {
 										res.send(404);
 										throw err;
 										return;
 									}
 
-									mongoose.model('User').update( {_id: friendDoc._id}, {friends: friendDoc.friends}, opts, function(err) {
+									mongoose.model('User').update( {_id: friendDoc._id}, {friends: friendDoc.friends}, opts, function (err) {
 										if (err) {
 											res.send(404);
 											throw err;
@@ -182,7 +182,7 @@ module.exports = function(app, passport, mongoose) {
 	});
 
 		// delete self
-	app.post('/delete', verify, function(req, res) {
+	app.post('/delete', verify, function (req, res) {
 		// TODO
 		console.log('in /delete');
 
@@ -190,10 +190,87 @@ module.exports = function(app, passport, mongoose) {
 
 
 	/**
+		*	Add comment POST
+		*/
+	app.post('/addcomment', verify, function (req, res) {
+		var data = req.body; // get json data
+
+		console.log("IN ADD COMMENT");
+
+		if (req.user || data.content.length < 1) { // verified
+			var tweetId = data.tweetId;
+			var userId = req.user._id;
+
+			// get the tweet
+			mongoose.model('Tweet').findOne( {_id: tweetId}).exec(function (err, tweet) {
+				if (err) throw err;
+
+				mongoose.model('User').findOne( {_id: tweet.user} ).exec(function (err, user) {
+					var friends = user.friends;
+					// check that it is a friend
+					var OK = false;
+					for (var i = 0; i < friends.length; i++) {
+						console.log("friend:" + friends[i]);
+						console.log("userId:" + userId);
+						if (friends[i].equals(userId) ) {
+							OK = true;
+							break;
+						}
+					}
+
+					if (OK) {
+						// create a new comment model
+
+						var Comment = mongoose.model('Comment');
+						var commentData = new Comment({
+							content: data.content,
+							user: userId,
+							tweet: tweetId
+						});
+
+						// save the comment
+						commentData.save(function (err) {
+							if (err) {
+								throw err;
+								return;
+							}
+
+							console.log("Saved new Comment!");
+
+							// add the comment to the tweets comment array
+							tweet.comments.push( commentData._id );
+							
+							// update the tweet
+							mongoose.model('Tweet').update( {_id: tweet._id}, {comments: tweet.comments}, {multi:false}, function(err) {
+								if (err) {
+									res.send(404);
+									throw err;
+									return;
+								}
+
+								res.send(200, {message: "Your comment was addedd successfully"});
+
+								// update clients
+								io.sockets.emit('newcomment', commentData);
+							});
+						});
+					} else {
+						console.log("Couldn't add comment!");
+						res.send(404, {message: "couldn't add comment."});
+					}
+				}); // model('Iser').findOne
+			}); // model('Tweet').findOne
+		} // is (req.user)
+		else {
+			res.send(404, {message: "Need to be logged in"});
+		}
+	});
+
+	/**
 		*	Twiit POST
 		*	json data format: {user: 'user', content: 'twiit msg'}
 		*/
-	app.post('/twiit', verify, function(req, res) {
+	app.post('/twiit', verify, function (req, res) {
 		console.log("IN TWIIT");
 		console.log(req.body);
 
@@ -234,7 +311,7 @@ module.exports = function(app, passport, mongoose) {
 
 			// send the tweet (and populate it) to all clients
 			// populate the user name in the tweet user reference
-			mongoose.model('Tweet').populate(tweets, { path: 'user', select: 'user -_id' }, function(err, tweets) {
+			mongoose.model('Tweet').populate(tweets, { path: 'user', select: 'user -_id' }, function (err, tweets) {
 				var tweet = {
 					content: tweets.content,
 					user: tweets.user,
@@ -277,7 +354,7 @@ module.exports = function(app, passport, mongoose) {
 
 	// get everything
 	app.get('/find', function(req, res) {
-		mongoose.model('User').find().populate('tweets').exec(function(err,users) {
+		mongoose.model('User').find().populate('tweets').exec(function (err,users) {
 			res.send(users);
 		});
 	});
@@ -291,9 +368,18 @@ module.exports = function(app, passport, mongoose) {
 			email: true
 		};
 		
-		mongoose.model('User').find( {}, projection ).sort({_id: -1}).exec(function(err, users) {
+		mongoose.model('User').find( {}, projection ).sort({_id: -1}).exec(function (err, users) {
 			if (err) throw err;
 			res.send(users);
+		});
+	});
+
+	// get specific user by ID
+	app.get('/users/:userId', function (req, res) {
+		mongoose.model('User').findOne( {_id: req.params.userId}).exec( function (err, user) {
+			if (err) throw err;
+
+			res.send(user);
 		});
 	});
 
@@ -301,7 +387,7 @@ module.exports = function(app, passport, mongoose) {
 	app.get('/friends/:user', function(req, res) {
 		var user = req.params.user;
 		console.log("in friends");
-		mongoose.model('User').findOne({lowercaseName: user.toLowerCase()}).populate("friends").exec(function(err, doc) {
+		mongoose.model('User').findOne({lowercaseName: user.toLowerCase()}).populate("friends").exec(function (err, doc) {
 			res.send(doc);
 		});
 	});
@@ -309,7 +395,7 @@ module.exports = function(app, passport, mongoose) {
 	app.get('/friends/:id', function(req, res) {
 		var id = req.params.id;
 
-		mongoose.model('User').findOne({_id: id}).populate("friends").exec(function(err, doc) {
+		mongoose.model('User').findOne({_id: id}).populate("friends").exec(function (err, doc) {
 			res.send(doc);
 		});
 	});
@@ -325,6 +411,26 @@ module.exports = function(app, passport, mongoose) {
 			});
 	});
 
+	// get all tweets by user (filled with comments)
+	app.get('/tweets/:user', function(req, res) {
+		var user = req.params.user;
+
+		mongoose.model('User').findOne( {lowercaseName: user.toLowerCase()} ).exec(function (err, usr) {
+			if (err) throw err;
+			
+			mongoose.model('Tweet').find( {user: usr._id} ).sort({_id: 1}).exec(function (err, tweets) {
+				if (err) throw err;
+
+				// insert all the comments of the tweets
+				mongoose.model('Tweet').populate(tweets, {path: "comments"}, function (err, tweets) {
+					res.send(tweets);
+				});
+			});
+		})
+	});
+
+	
+
 	// get all tweets barebone (withotu population, only object Id's for users)
 	app.get('/tweetsbare', function(req, res) {
 		mongoose.model('Tweet').find().sort({_id: -1}).exec(function(err, tweets) {
@@ -339,7 +445,7 @@ module.exports = function(app, passport, mongoose) {
 		mongoose.model('Tweet').find().sort({_id: -1}).limit(5).exec(function(err, tweets) {
 			if (err) throw err;
 
-			mongoose.model('Tweet').populate(tweets, { path: 'user', select: 'user -_id' }, function(err, tweets) {
+			mongoose.model('Tweet').populate(tweets, { path: 'user', select: 'user -_id' }, function (err, tweets) {
 				res.send(tweets);
 			});
 		});
@@ -371,7 +477,7 @@ module.exports = function(app, passport, mongoose) {
 			}
 
 			// get all the tweets from the id's and sort them and limit to 5
-			mongoose.model('Tweet').find( {user: {$in: ids } } ).sort({_id: -1}).limit(5).populate('user').exec(function(err, tweets) {
+			mongoose.model('Tweet').find( {user: {$in: ids } } ).sort({_id: -1}).limit(5).populate('user').exec(function (err, tweets) {
 				if (err) throw err;
 
 				console.log(tweets);

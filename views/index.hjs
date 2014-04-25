@@ -387,6 +387,8 @@
         // update user list if a new user has registered
         socket.on('newuser', function(data) {
           console.log("new user registered: " + (data.name || data.user) );
+
+          fullUserList.push( data );
           
           var str = '<a href="#" class="list-group-item">'+ (data.name || data.user) +'</a>';
           $(".HOME .userList").prepend( str + '<br>');
@@ -398,6 +400,12 @@
         socket.on('newfriend', function(data) {
           // TODO
           console.log("In newfriend socket event");
+        });
+
+        socket.on('newcomment', function (data) {
+          console.log(data);
+
+          $(".PROFILE ." + data.tweet).prepend( newCOmment( getNameOfId(data.user), data.content ) );
         });
 
         socket.on('usersOnline', function(data) {
