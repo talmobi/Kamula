@@ -287,8 +287,6 @@ init = function() {
   $(".loginButton").click( function() {
     var dataOut = getFormData(".loginView");
   
-    alert( JSON.stringify(dataOut));
-
     // handle the request
     var jqhxr = $.post( "/login", dataOut, function( data ) {
       console.log( JSON.stringify(data) )
@@ -352,7 +350,25 @@ init = function() {
   });
 
   $(".myUpdateForm .deleteButton").click( function() {
+    var data = getFormData(".myUpdateForm");
+    data.user = userName;
 
+    $.ajax( {
+      type: 'DELETE',
+      url: 'api/users/' + userName.toLowerCase(),
+      data: JSON.stringify( data ),
+      success: function(data) {
+        // update the update view
+        console.log("DELETED SUCCESSFULLY");
+        console.log(data);
+        switchToMainPage();
+      },
+      error: function() {
+        console.log("Failed to DELETE.");
+      },
+      contentType: 'application/json',
+      dataType: 'json',
+    });
   });
 
 }
