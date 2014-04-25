@@ -1,25 +1,53 @@
 /**
-	*	Do tests with tobi
+	*	Do tests with SODA
 	*/
 
-var tobi = require('tobi');
-var browser = tobi.createBrowser(80, '127.0.0.1');
+var soda = require('soda');
+var assert = require('assert');
+var jq = require('jquery');
+
+var browser = soda.createClient({
+	host: '127.0.0.1',
+	port: '80',
+	url: 'http://www.google.com',
+	browser: 'firefox'
+});
+
 
 // check registration
-browser.get('/', function (res, $)) {
+
+browser
+	.chain
+	.session()
+	.open('/')
+	.type('user', 'TestUser')
+	.type('passwd', 'losenord')
+	.clickAndWait('registerButton')
+	.assertTextPresent('logout')
+	.testComplete()
+	.end(function (err) {
+		if (err) throw err;
+		console.log('Test finished.');
+	});
+
+
+// check registration
+/*
+browser.get('/', function (res, jq) {
 	console.log("doing tests.");
 
-	$('myRegisterForm')
+	jq('.myRegisterForm')
 	.fill({
 		myUsernameInput: 'TestUser',
 		myFullNameInput: 'Terrible Muriel',
 		myEmailInput: 'mail@snailmail.com',
 		myPasswordInput: 'losenord'
 	})
-	.submit(function (res, $) {
-		$(".navContainer .userName").text().should.requal('TestUser');
+	.submit(function (res, jq) {
+		jq(".navContainer .userName").text().should.requal('TestUser');
 	})
 
 
 	console.log("Tests finished.");
-}
+});
+*/

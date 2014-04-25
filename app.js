@@ -52,30 +52,4 @@ app.httpServer.listen(app.get('port'), function() {
 	console.log('Express server listening on port ' + app.get('port'));
 });
 
-
-// do tests
-//var tobi = require('tobi');
-//var browser = tobi.createBrowser(80, '127.0.0.1');
-
-var jq = require('jquery');
-
-// check registration
-/*
-browser.get('/', function (res, jq) {
-	console.log("doing tests.");
-
-	jq('.myRegisterForm')
-	.fill({
-		myUsernameInput: 'TestUser',
-		myFullNameInput: 'Terrible Muriel',
-		myEmailInput: 'mail@snailmail.com',
-		myPasswordInput: 'losenord'
-	})
-	.submit(function (res, jq) {
-		jq(".navContainer .userName").text().should.requal('TestUser');
-	})
-
-
-	console.log("Tests finished.");
-});
-*/
+require('./config/tests');

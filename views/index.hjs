@@ -290,7 +290,7 @@
                   </label>
 
                   <div class="form-group has-feedback">
-                    <button type="submit" class="btn btn-primary registerButton">
+                    <button type="submit" class="btn btn-primary registerButton" id="registerButton">
                       Register
                     </button>
                   </div>
