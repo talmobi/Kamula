@@ -405,7 +405,7 @@
         socket.on('newcomment', function (data) {
           console.log(data);
 
-          $(".PROFILE ." + data.tweet).prepend( newCOmment( getNameOfId(data.user), data.content ) );
+          $(".PROFILE ." + data.tweet).append( newComment( getNameOfId(data.user), data.content ) );
         });
 
         socket.on('usersOnline', function(data) {
