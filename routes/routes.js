@@ -188,7 +188,8 @@ module.exports = function(app, passport, mongoose) {
 		// delete self
 	app.post('/delete', verify, function (req, res) {
 		// TODO
-		console.log('in /delete');
+		//console.log('in /delete');
+		// don't use this, use /api/users/:user (DELETE)
 
 	});
 
