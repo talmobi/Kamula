@@ -212,7 +212,7 @@ module.exports = function(app, passport, mongoose) {
 				mongoose.model('User').findOne( {_id: tweet.user} ).exec(function (err, user) {
 					var friends = user.friends;
 					// check that it is a friend
-					var OK = false;
+					var OK = true;
 					for (var i = 0; i < friends.length; i++) {
 						console.log("friend:" + friends[i]);
 						console.log("userId:" + userId);

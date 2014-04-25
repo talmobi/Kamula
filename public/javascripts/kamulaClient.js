@@ -361,7 +361,7 @@ init = function() {
         // update the update view
         console.log("DELETED SUCCESSFULLY");
         console.log(data);
-        switchToMainPage();
+        isAuth(switchToMainPage(), switchToMainPage());
       },
       error: function() {
         console.log("Failed to DELETE.");
