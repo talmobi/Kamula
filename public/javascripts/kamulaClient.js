@@ -3,6 +3,7 @@
 var userName = '';
 var lastLoginState = false;
 var currentProfile = '';
+var userJson;
 
 var fullUserList = [];
 
@@ -85,6 +86,8 @@ var isAuth = function(authed, failed) {
     }
 
     var json = JSON.parse(data);
+    userJson = JSON.parse(data);
+
     authed(json);
     setName(json.user);
     userName = json.user;
@@ -158,6 +161,7 @@ init = function() {
     })
       .done(function() {        
         navBarAnon();
+        $(".PROFILE tweetList").empty();
         switchToHomeView();
       })
       .fail(function() {
@@ -324,6 +328,31 @@ init = function() {
       formFail(data);
       navBarAnon();
     })
+  });
+
+  $(".myUpdateForm .updateButton").click( function() {
+    var data = getFormData(".myUpdateForm");
+    data.user = userName;
+
+    $.ajax( {
+      type: 'PUT',
+      url: 'api/users/' + userName.toLowerCase(),
+      data: JSON.stringify( data ),
+      success: function(data) {
+        // update the update view
+        console.log("UPDATED SUCCESSFULLY");
+        console.log(data);
+      },
+      error: function() {
+        console.log("Failed to updated.");
+      },
+      contentType: 'application/json',
+      dataType: 'json',
+    });
+  });
+
+  $(".myUpdateForm .deleteButton").click( function() {
+
   });
 
 }
@@ -613,11 +642,18 @@ var loadProfileTweetsAndComments = function(userName) {
 switchToProfileView = function() {
   currentProfile = userName;
   // Show my own tweets
-  $(".WriteTweetDiv").show();
 
   // load profile tweets and between two ferns
   loadProfileTweetsAndComments(userName); // global userName variable
+  
+  $(".PROFILE .profileName").text(userName + "'s Tweets");
 
+  $(".myUpdateForm .myUsernameInput").attr("placeholder", userName);
+  $(".myUpdateForm .myFullNameInput").attr("placeholder", userJson.name);
+  $(".myUpdateForm .myEmailInput").attr("placeholder", userJson.email);
+  $(".myUpdateForm .myPasswordInput").attr("placeholder", 'Password');
+
+  $(".PROFILE .auth").show();
   switchTo(StateEnum.PROFILE);
 }
 
@@ -633,8 +669,8 @@ switchToProfileOf = function(user) {
   $(".PROFILE .profileName").text(user + "'s Tweets");
 
 
-  $(".WriteTweetDiv").hide();
   console.log("Switching to profile of: " + user)
 
+  $(".PROFILE .auth").hide();
   switchTo(StateEnum.PROFILE);
 }

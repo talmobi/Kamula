@@ -1,36 +1,30 @@
-module.exports = function(app, verify, mongoose) {
+module.exports = function(app, verify, mongoose, passport) {
 	//Lisää käyttäjän järjestelmään	Runkona lisättävä käyttäjä JSON-muodossa
-	app.post('/api/users', function(req, res) {
-		// proxy to /register on this server
+	app.post('/api/users', passport.authenticate('local-register'), function (req, res) {
+		console.log('in register');
 
-		var opts = {
-			host: 'localhost',
-			port: 80,
-			path: '/register',
-			method: 'POST',
-			headers: req.headers
-		};
+		if (req.user) {
+			// no user was found, create a new user
+			console.log('creating new user');
 
-		var http = require('http');
-		var proxyReq = http.request(opts, function(proxyRes) {
-			proxyRes.setEncoding('utf8');
+			tools.registerNewUser(req.user, function (userData) {
+				// success
+				var plainData = tools.toPlainUser( userData );
+				res.send(200, {message: "You successfully registered new user"});
 
-			proxyRes.on('data', function(chunk) {
-				res.write(chunk);
+				// delete password before sending the user data
+				delete plainData.password;
+				
+				// broadcast changes to all connected clients
+				io.sockets.emit('newuser', userData);
+				console.log(userData);
+			}, function() {
+				// failed
+				res.send(400, {message: "Failed to register"});
 			});
-
-			proxyRes.on('close', function(chunk) {
-				res.writeHead(proxyRes.statusCode);
-				res.end();
-			});
-		})
-			.on('error', function(err) {
-				console.log(err.message);
-				res.writeHead(500);
-				res.end();
-			});
-
-		proxyReq.end();
+		} else {
+			res.send(403, {message: "A user with that name already exists."})
+		}
 	});
 
 	// Hakee käyttäjän tiedot. Palauttaa käyttäjän tiedot JSON-muodossa
@@ -95,14 +89,21 @@ module.exports = function(app, verify, mongoose) {
 			if (doc) { // exists
 				var data = {
 					user: doc.user,
-					name: doc.name,
-					email: doc.email
+					name: json.name,
+					email: json.email,
+					password: json.password
 				}
 
 				// update the users info
-				mongoose.model('User').update( doc, newdata );
+				mongoose.model('User').update( {_id: doc._id} , data, {multi:false}, function (err) {
+					if (err) {
+						res.send(404);
+						throw err;
+						return;
+					}
 
-				res.send(200); // OK! Bojangles!
+					res.send(200, data); // OK! Bojangles!
+				});
 			} else {
 				res.send(404); // user doesn't exist
 			}
@@ -125,7 +126,18 @@ module.exports = function(app, verify, mongoose) {
 			}
 
 			if (doc) {
-					mongoose.model('User').remove( { lowercaseName: json.user.toLowerCase() } );
+					mongoose.model('User').update( {_id: doc._id}, {locked: true}, {multi:false}, function (err) {
+						if (err) {
+							res.send(404);
+							throw err;
+							return;
+						}
+
+						req.logout();
+						res.send(200, {message: "User successfully deleted."});
+					});
+					
+					//mongoose.model('User').remove( { lowercaseName: json.user.toLowerCase() } );
 			} else {
 				// ei ole olemassa
 				res.send(404);

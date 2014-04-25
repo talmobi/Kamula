@@ -143,25 +143,72 @@
         <!-- Profile view -->
         <div class="profileView myView PROFILE" hidden>
 
-          <!-- write new tweet ONLY FOR SELF USER -->
-          <div class="col-sm-4 WriteTweetDiv" hidden>
-            <div class="panel panel-primary">
-              <div class="panel-heading">
-                <h3 class="panel-title">Kirjoita Twiitti</h3>
+          <div class="auth" hidden>
+            <!-- write new tweet ONLY FOR SELF USER -->
+            <div class="col-sm-4 WriteTweetDiv">
+              <div class="panel panel-primary">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Kirjoita Twiitti</h3>
+                </div>
+                <div class="panel-body">
+                  <div class="input-group TwiitWritePanel">
+                    <input type="text" class="form-control" placeholder="Twiit twiit.">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" type="button">Twitituu!</button>
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div class="panel-body">
-                <div class="input-group TwiitWritePanel">
-                  <input type="text" class="form-control" placeholder="Twiit twiit.">
-                  <span class="input-group-btn">
-                    <button class="btn btn-default" type="button">Twitituu!</button>
-                  </span>
+            </div> <!-- write new tweet ONLY FOR SELF USER -->
+
+            <div class="col-sm-4">
+              <div class="panel panel-primary">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Update</h3>
+                </div>
+                <div class="panel-body">
+                  
+                  <form class="input-group myForm myUpdateForm">
+                    <label>
+                      <div class="form-group has-feedback myUsername">
+                        <input disabled type="text" class="form-control myInput myUsernameInput" placeholder="username">
+                      </div>
+                    </label>
+
+                    <label>
+                      <div class="form-group has-feedback myFullName">
+                        <input type="text" class="form-control myInput myFullNameInput" placeholder="Full Name">
+                      </div>
+                    </label>
+
+                    <label>
+                      <div class="form-group has-feedback myEmail">
+                        <input type="email" class="form-control myInput myEmailInput" placeholder="email">
+                      </div>
+                    </label>
+
+                    <label>
+                      <div class="form-group has-feedback myPassword">
+                        <input type="password" class="form-control myInput myPasswordInput" placeholder="Password">
+                      </div>
+                    </label>
+
+                    <div class="form-group has-feedback">
+                      <button type="submit" class="btn btn-success updateButton">
+                        Update
+                      </button>
+                      <button type="submit" class="btn btn-danger pull-right deleteButton">
+                        DELETE
+                      </button>
+                  </form>
+                  
                 </div>
               </div>
             </div>
-          </div> <!-- write new tweet ONLY FOR SELF USER -->
+          </div>
+        </div>
 
-
-          <!-- Recent profile op tweets view -->
+          <!-- Profile tweets view -->
           <div class="col-sm-8">
             <div class="panel panel-primary">
               <div class="panel-heading">
@@ -252,6 +299,7 @@
               </div>
             </div>
           </div>
+
         </div> <!-- Register view -->
 
 

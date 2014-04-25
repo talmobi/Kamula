@@ -26,6 +26,8 @@ module.exports = function(mongoose) {
 		email: String,
 		password: String,
 
+		locked: Boolean,
+
 		// additional
 		auth: { time: Number, val: String },
 		lowercaseName: String,

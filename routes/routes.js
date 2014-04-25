@@ -29,7 +29,7 @@ module.exports = function(app, passport, mongoose) {
 	/** 
 		* API as per spec
 		*/
-	require('./api')(app, verify, mongoose);
+	require('./api')(app, verify, mongoose, passport);
 	/*
 		TODO - unsure about self executing functin pattern here
 	*/
@@ -80,7 +80,11 @@ module.exports = function(app, passport, mongoose) {
 		if (!req.user) {
 			res.send( 404, { message: "That user doesn't exist.", errorSource: "" } );
 		} else {
-			res.send( 200, { message: "Logged in successfully!"});
+			if (req.user.locked) {
+				res.send( 404, { message: "That user is deleted.", errorSource: "" } );
+			} else {
+				res.send( 200, { message: "Logged in successfully!"});
+			}
 		}
 
 		console.log(req.user);
@@ -376,11 +380,19 @@ module.exports = function(app, passport, mongoose) {
 
 	// get specific user by ID
 	app.get('/users/:userId', function (req, res) {
-		mongoose.model('User').findOne( {_id: req.params.userId}).exec( function (err, user) {
-			if (err) throw err;
+		try {
+			mongoose.model('User').findOne( {_id: req.params.userId}).exec( function (err, user) {
+				if (err) throw err;
 
-			res.send(user);
-		});
+				res.send(user);
+			});
+		} catch (err) {
+			mongoose.model('User').findOne( { lowercaseName: req.params.userId.toLowerCase() }).exec( function (err, user) {
+				if (err) throw err;
+
+				res.send(user);
+			});
+		}
 	});
 
 	// get friends of a user

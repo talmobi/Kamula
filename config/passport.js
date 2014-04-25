@@ -59,6 +59,7 @@ module.exports = function(passport, mongoose) {	// called from app.js
 					if (err) return done(err);
 					if (!user) return done(null, false, { message: 'Incorrect username.' });
 					if (user.password !== password) return done(null, false, { message: 'Incorrect password' });
+					if (user.locked) return done(null, false, { message: 'This user has been deleted'});
 					return done(null, user);
 				});
 			}));
