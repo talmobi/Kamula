@@ -1,11 +1,14 @@
 // adds dynamic jquery functionality to the client side page
 
 var userName = '';
+var lastLoginState = false;
+var currentProfile = '';
 
 var slideTime = 600;
 
 var StateEnum = {
   HOME: "HOME",
+  MAIN: "MAIN",
   REG: "REG",
   LOG: "LOG",
   PROFILE: "PROFILE",
@@ -66,8 +69,19 @@ var formFail = function(data) {
   }, 3000);
 }
 
+
+// called when the user login state switches for on/off
+var stateSwitch = function() {
+}
+
+
 var isAuth = function(authed, failed) {
   $.get('/auth', function(data) {
+    if (!lastLoginState) {
+      lastLoginState = true;
+      stateSwitch();
+    }
+
     var json = JSON.parse(data);
     authed(json);
     setName(json.user);
@@ -76,6 +90,10 @@ var isAuth = function(authed, failed) {
     $("#authNav").show();
   })
      .fail( function() {
+      if (lastLoginState) {
+        lastLoginState = false;
+        stateSwitch();
+      }
        failed();
        $("#anonNav").show();
        $("#authNav").hide();
@@ -134,7 +152,7 @@ init = function() {
   $("#LogoutLink").click( function() {
     $.get("/logout", function() {
     })
-      .done(function() {
+      .done(function() {        
         navBarAnon();
         switchToHomeView();
       })
@@ -154,14 +172,14 @@ init = function() {
     // who are already your friends
     isAuth(function(selfjson) {
 
-      // get full list of users and 
+      // get full list of users and remove all friends
       $.getJSON("/users", function( data ) {
         $.each( data, function( key, val) {
 
           var skip = false;
           // skip this if it is a friend
           for (var i = 0; i < selfjson.friends.length; i++) {
-            if (val.name.toLowerCase() === selfjson.friends[i].name.toLowerCase()) {
+            if (val._id == selfjson.friends[i]) {
               skip = true;
               break;
             }
@@ -182,7 +200,7 @@ init = function() {
                 friend_id: val._id
               };
 
-              alert(JSON.stringify(data));
+              //alert(JSON.stringify(data));
 
               $.ajax( {
                 type: 'POST',
@@ -192,8 +210,14 @@ init = function() {
                   console.log("Successfully Added a friend!!");
                   console.log(data);
                   var str = '<a href="#" class="list-group-item">'+ (data.friend) +'</a>';
-                  $(".friendsPanel .friendsList").prepend(str + '<br>');
-                  $(".friendsPanel .friendsList a:first").hide().show(slideTime);
+                  $(".MAIN .userList").prepend( str + '<br>');
+                  var e = $(".MAIN .userList a").first();
+                  e.hide().show(600);
+                  e.click(function() {
+                    var p = this.text;
+                    switchToProfileOf(p);
+                    console.log("Switching to friend profile: " + p);
+                  });
                 },
                 error: function() {
                   alert("Error adding friend.");
@@ -201,21 +225,6 @@ init = function() {
                 contentType: "application/json",
                 dataType: 'json'
               });
-
-              /*
-              $.ajax({
-                type: 'POST',
-                url: '/twiit',
-                data: JSON.stringify(data),
-                success: function(data) { 
-                  console.log('successfully sent tweet');
-                  console.log(data);
-                 },
-                error: function() {console.log("Error sending tweet.")},
-                contentType: "application/json",
-                dataType: 'json'
-              });
-              */
             });
           }
         });
@@ -323,6 +332,11 @@ pageInit = function() {
       console.log(val);
       var str = '<a href="#" class="list-group-item">'+ (val.name || val.user) +'</a>';
       $(".HOME .userList").append( str + '<br>');
+      $(".HOME .userList a").last().click(function() {
+        var p = this.text;
+        switchToProfileOf(p);
+        console.log("Switching to priofile of: " + p);
+      });
     });
 
     $(".HOME .userList").show(slideTime);
@@ -354,19 +368,20 @@ pageInit = function() {
   */
 var loadFriendsList = function(self) {
   $.getJSON('/friends/' + self.user, function(data) {
-    var flist = $(".friendsPanel .friendsList");
-    flist.empty();
+    var flist = $(".MAIN .userList").empty();
 
     var friends = data.friends;
 
     for (var i = 0; i < friends.length; i++) {
       var f = friends[i];
+      console.log(f.user);
       console.log(f);
       var str = '<a href="#" class="list-group-item">'+ (f.user) +'</a>';
       flist.prepend(str + '<br>');
-      $(".friendsPanel .friendsList a:first").click(function() {
-        switchToProfileOf(f.user);
-        console.log("Switching to friend profile: " + f.user);
+      $(".MAIN .userList a").first().click(function() {
+        var p = this.text;
+        switchToProfileOf(p);
+        console.log("Switching to friend profile: " + p);
       });
     }
   })
@@ -381,7 +396,6 @@ navBarAnon = function() {
   $("#anonNav").show();
   $("#authNav").hide();
   $("#userNameId").text( "Not logged in." );
-  $(".HOME .friendsPanel").hide();
 }
 navBarAuth = function() {
   $("#anonNav").hide();
@@ -399,21 +413,15 @@ switchToMainPage = function() {
     // hide content for anons
     navBarAuth();
 
-    $(".HOME .anonPanel").hide();
-    $(".HOME .friendsPanel").show();
-
     // load friends list
     console.log(data.friends || []);
     loadFriendsList(data);
 
     // logged in
-    switchToHomeView();
+    switchToMainView();
   }, function() {
     // show content for anons
     navBarAnon();
-
-    $(".HOME .anonPanel").show();
-    $(".HOME .friendPanel").hide();
 
     switchToHomeView();
   });
@@ -421,6 +429,34 @@ switchToMainPage = function() {
 
 switchToHomeView = function() {
   switchTo(StateEnum.HOME);
+}
+
+switchToMainView = function() {
+  // get latest friend tweets
+  // get latest tweets through api
+  $.getJSON("/latestfriends", function( data ) {
+    $(".MAIN .tweetList").empty();
+
+    $.each( data, function( key, val) {
+      //console.log(val);
+      var string = '<li class="media"> \
+                      <a class="pull-left" href="#"> \
+                        <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
+                      </a> \
+                      <div class="media-body"> \
+                        <h4 class="media-heading">'+val.user.user+'</h4> \
+                        '+val.content+' \
+                      </div> \
+                    </li>';
+      $(".MAIN .tweetList").append( string );
+    });
+
+    $(".MAIN .tweetList").show(slideTime);
+  });
+
+
+
+  switchTo(StateEnum.MAIN);
 }
 
 switchToRegisterView = function() {
@@ -431,15 +467,18 @@ switchToLoginView = function() {
   switchTo(StateEnum.LOG);
 }
 
+// switch to users own profile
 switchToProfileView = function() {
+  // Show my own tweets
+
   switchTo(StateEnum.PROFILE);
-  $(".HOME .friendsPanel").show();
 }
 
 switchToAddFriendView = function() {
   switchTo(StateEnum.ADDFRIEND);
 }
 
+// switch to ANOTHER users profile
 switchToProfileOf = function() {
   //
 }

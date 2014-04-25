@@ -325,6 +325,7 @@ module.exports = function(app, passport, mongoose) {
 			});
 	});
 
+	// get overall latest 5 tweets
 	app.get('/latest', function(req, res) {
 		mongoose.model('Tweet').find().sort({_id: -1}).limit(5).exec(function(err, tweets) {
 			if (err) throw err;
@@ -333,6 +334,45 @@ module.exports = function(app, passport, mongoose) {
 				res.send(tweets);
 			});
 		});
+	});
+
+	// get latest friend tweets
+	app.get('/latestfriends', verify, function(req, res) {
+		console.log("in /latestfriends");
+
+		if (req.user) {
+
+			console.log("in friends");
+			
+			var ids = [];
+			var friends = req.user.friends;
+
+			if (friends.length <= 0) {
+				res.send(200, {message: "no friends"});
+				console.log("No friends found.");
+				return;
+			}
+
+			console.log("friendscount: " + friends.length);
+			//console.log(friends);
+
+			for (var i = 0; i < friends.length; i++) {
+				console.log(friends[i]);
+				ids.push(friends[i]);
+			}
+
+			// get all the tweets from the id's and sort them and limit to 5
+			mongoose.model('Tweet').find( {user: {$in: ids } } ).sort({_id: -1}).limit(5).populate('user').exec(function(err, tweets) {
+				if (err) throw err;
+
+				console.log(tweets);
+
+				res.send(tweets);
+			});
+
+		} else {
+			res.send(404, {message: "must be logged in to see friendly tweets"});
+		}
 	});
 
 
