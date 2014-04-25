@@ -242,6 +242,7 @@ init = function() {
   // Writing tweet
   $(".TwiitWritePanel button").click( function() {
     var text = $(".TwiitWritePanel input").val();
+    $(".TwiitWritePanel input").val('');
     
     isAuth( function(selfjson) {
       // TODO verify tweet length etc
@@ -509,8 +510,11 @@ switchToProfileOf = function(user) {
   currentProfile = user;
   //
   loadProfileTweetsAndFriends(user);
+  $(".PROFILE .profileName").text(user + "'s Tweets");
 
 
   $(".WriteTweetDiv").hide();
   console.log("Switching to profile of: " + user)
+
+  switchTo(StateEnum.PROFILE);
 }
