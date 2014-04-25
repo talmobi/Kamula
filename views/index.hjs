@@ -365,6 +365,12 @@
           e.hide().show(600);
         });
 
+        // update new friend
+        socket.on('newfriend', function(data) {
+          // TODO
+          console.log("In newfriend socket event");
+        });
+
         socket.on('usersOnline', function(data) {
           $("#usersOnlineId").text(data.usersOnline);
           console.log("USERS ONLINE");

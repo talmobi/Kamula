@@ -142,12 +142,13 @@ module.exports = function(app, passport, mongoose) {
 								}
 								
 								// friend them
-								userDoc.friends.push(friendDoc._id);
-								friendDoc.friends.push(userDoc._id);
+								userDoc.friends.push( { name: friendDoc.user, _id: friendDoc._id } );
+								friendDoc.friends.push( { name: userDoc.user, _id: userDoc._id } );
 
 								var opts = {
 									multi: false
 								};
+
 								// update the documents
 								mongoose.model('User').update( {_id: userDoc._id}, {friends: userDoc.friends}, opts, function(err) {
 									if (err) {
@@ -284,6 +285,23 @@ module.exports = function(app, passport, mongoose) {
 		mongoose.model('User').find( {}, projection ).sort({_id: -1}).exec(function(err, users) {
 			if (err) throw err;
 			res.send(users);
+		});
+	});
+
+	// get friends of a user
+	app.get('/friends/:user', function(req, res) {
+		var user = req.params.user;
+		console.log("in friends");
+		mongoose.model('User').findOne({lowercaseName: user.toLowerCase()}).populate("friends").exec(function(err, doc) {
+			res.send(doc);
+		});
+	});
+
+	app.get('/friends/:id', function(req, res) {
+		var id = req.params.id;
+
+		mongoose.model('User').findOne({_id: id}).populate("friends").exec(function(err, doc) {
+			res.send(doc);
 		});
 	});
 

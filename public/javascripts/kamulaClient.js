@@ -161,7 +161,7 @@ init = function() {
           var skip = false;
           // skip this if it is a friend
           for (var i = 0; i < selfjson.friends.length; i++) {
-            if (val.user.toLowerCase() === selfjson.friends[i].user.toLowerCase()) {
+            if (val.name.toLowerCase() === selfjson.friends[i].name.toLowerCase()) {
               skip = true;
               break;
             }
@@ -348,24 +348,40 @@ pageInit = function() {
   });
 }
 
-var loadFriendsList = function(friends) {
-  var flist = $(".friendsPanel .friendsList");
-  flist.empty();
 
-  for (var f in friends) {
-    var str = '<a href="#" class="list-group-item">'+ (data.friend) +'</a>';
-    flist.prepend(str + '<br>');
-    flist.first().click(function() {
-      
-    });
-  }
+/**
+  * Load friends list
+  */
+var loadFriendsList = function(self) {
+  $.getJSON('/friends/' + self.user, function(data) {
+    var flist = $(".friendsPanel .friendsList");
+    flist.empty();
 
+    var friends = data.friends;
+
+    for (var i = 0; i < friends.length; i++) {
+      var f = friends[i];
+      console.log(f);
+      var str = '<a href="#" class="list-group-item">'+ (f.user) +'</a>';
+      flist.prepend(str + '<br>');
+      $(".friendsPanel .friendsList a:first").click(function() {
+        switchToProfileOf(f.user);
+        console.log("Switching to friend profile: " + f.user);
+      });
+    }
+  })
 }
 
+
+
+/**
+  * NavBar switching from logged in and not logged in mode
+  */
 navBarAnon = function() {
   $("#anonNav").show();
   $("#authNav").hide();
   $("#userNameId").text( "Not logged in." );
+  $(".HOME .friendsPanel").hide();
 }
 navBarAuth = function() {
   $("#anonNav").hide();
@@ -375,7 +391,9 @@ setName = function(name) {
   $("#userNameId").text( "Welcome, " + name );
 }
 
-// helper state switching hooks
+/**
+  * helper state switching hooks
+  */
 switchToMainPage = function() {
   isAuth(function(data) {
     // hide content for anons
@@ -385,8 +403,8 @@ switchToMainPage = function() {
     $(".HOME .friendsPanel").show();
 
     // load friends list
-
-    loadFriendsList(data.friends);
+    console.log(data.friends || []);
+    loadFriendsList(data);
 
     // logged in
     switchToHomeView();
@@ -420,4 +438,8 @@ switchToProfileView = function() {
 
 switchToAddFriendView = function() {
   switchTo(StateEnum.ADDFRIEND);
+}
+
+switchToProfileOf = function() {
+  //
 }
