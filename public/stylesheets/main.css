@@ -18,3 +18,13 @@ body {
 #usersOnlineId {
 	text-decoration: none;
 }
+
+
+.tweet div:hover {
+	padding-left: 2px;
+	background-color: #EEE;
+}
+
+.comment {
+	padding: 5px 5px 0px 30px;
+}

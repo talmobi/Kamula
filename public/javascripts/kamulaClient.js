@@ -101,10 +101,10 @@ var isAuth = function(authed, failed) {
 }
 
 // insert tweet into tweet
-var addTweet = function(className, user, text) {
+var addTweet = function(className, user, text, tweetId) {
   var tweetList = $("."+className+" .tweetList");
 
-  var string = '<li class="media" hidden> \
+  var string = '<div class="tweet"><li class="media '+tweetId+'" hidden tweetId="'+tweetId+'"> \
                 <a class="pull-left" href="#"> \
                   <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
                 </a> \
@@ -112,14 +112,16 @@ var addTweet = function(className, user, text) {
                   <h4 class="media-heading">'+ (user || 'Anon') +'</h4> \
                   '+text+' \
                 </div> \
-              </li>';
+              </li></div>';
 
   tweetList.prepend(string);
 
   // get the new list
   var tweetListli = $("."+className+" .tweetList li");
   // animate it a little bit
-  tweetListli.first().hide().show(600);
+  var e = tweetListli.first();
+  e.hide().show(600);
+  return e;
 }
 
 // initialize jquery API funcitonality
@@ -465,14 +467,60 @@ switchToLoginView = function() {
   switchTo(StateEnum.LOG);
 }
 
-var loadProfileTweetsAndFriends = function(userName) {
+
+/**
+  * Load tweets and comments in the profile views
+  */
+
+// helper function
+var newComment = function(user, content) {
+        var comment = '<li class="media comment"> \
+                      <a class="pull-left" href="#"> \
+                        <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
+                      </a> \
+                      <div class="media-body"> \
+                        <h4 class="media-heading">'+user+'</h4> \
+                        '+content+' \
+                      </div> \
+                    </li>';
+        return comment;
+      }
+
+
+var loadProfileTweetsAndComments = function(userName) {
   // load profile tweets
   $.get('/api/users/' + userName, function(data) {
     var tweets = data.tweets;
 
     for (var i = 0; i < tweets.length; i++) {
       var tweet = tweets[i];
-      addTweet("PROFILE", userName, tweet.content);
+      var e = addTweet("PROFILE", userName, tweet.content, tweet._id);
+
+      // add hidden comments after the tweet
+      // that are shown when the tweet is clicked
+      var div = '<div class="commentDiv '+ tweet._id +'" hidden>';
+
+      console.log("e.id: " + e.id);
+
+      var comments = tweet.comments;
+      for (var n = 0; n < comments + 3; n++) {
+        var comment = newComment("Anon", "Sample comment.");
+        div += comment;
+      }
+      div += '</div>'
+
+      e.append(div);
+
+      console.log(tweet._id);
+
+      var tid = tweet._id;
+      // show/hide comments
+      e.click( function() {
+        console.log(this);
+        var tid = this.getAttribute('tweetId');
+        console.log("CLICK: " + tid);
+        $(".commentDiv." + tid).toggle(slideTime);
+      });
     }
 
     var friends = data.friends;
@@ -493,10 +541,7 @@ switchToProfileView = function() {
   $(".WriteTweetDiv").show();
 
   // load profile tweets and between two ferns
-  loadProfileTweetsAndFriends(userName); // global userName variable
-
-  // Load users friends
-
+  loadProfileTweetsAndComments(userName); // global userName variable
 
   switchTo(StateEnum.PROFILE);
 }
@@ -509,7 +554,7 @@ switchToAddFriendView = function() {
 switchToProfileOf = function(user) {
   currentProfile = user;
   //
-  loadProfileTweetsAndFriends(user);
+  loadProfileTweetsAndComments(user);
   $(".PROFILE .profileName").text(user + "'s Tweets");
 
 
