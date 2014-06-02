@@ -1,7 +1,6 @@
 // adds dynamic jquery functionality to the client side page
 
 var userName = '';
-var un = '';
 var lastLoginState = false;
 var currentProfile = '';
 var userJson;
@@ -92,7 +91,6 @@ var isAuth = function(authed, failed) {
     authed(json);
     setName(json.user);
     userName = json.user;
-    un = json.user;
     $("#anonNav").hide();
     $("#authNav").show();
   })
