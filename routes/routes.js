@@ -113,7 +113,6 @@ module.exports = function(app, passport, mongoose) {
 		* add friend
 		*/
 	app.post('/addfriend', verify, function(req, res) {
-		// TODO
 		console.log('in /addfriend');
 		if (!req.user) {
 			res.send( 404, { message: "Not authorized" } );
@@ -185,12 +184,10 @@ module.exports = function(app, passport, mongoose) {
 		console.log(req.user);
 	});
 
-		// delete self
+		// delete self deprecated
 	app.post('/delete', verify, function (req, res) {
-		// TODO
 		//console.log('in /delete');
 		// don't use this, use /api/users/:user (DELETE)
-
 	});
 
 
@@ -431,6 +428,8 @@ module.exports = function(app, passport, mongoose) {
 		mongoose.model('User').findOne( {lowercaseName: user.toLowerCase()} ).exec(function (err, usr) {
 			if (err) throw err;
 			
+			if (!usr) return; // null exc fix
+
 			mongoose.model('Tweet').find( {user: usr._id} ).sort({_id: 1}).exec(function (err, tweets) {
 				if (err) throw err;
 

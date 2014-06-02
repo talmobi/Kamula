@@ -438,7 +438,7 @@
 
           fullUserList.push( data );
           
-          var str = '<a href="#" class="list-group-item">'+ (data.name || data.user) +'</a>';
+          var str = '<a href="#" class="list-group-item">'+ (data.user) +'</a>';
           $(".HOME .userList").prepend( str + '<br>');
           var e = $(".HOME .userList .list-group-item").first();
           e.hide().show(600);
@@ -446,14 +446,22 @@
 
         // update new friend
         socket.on('newfriend', function(data) {
-          // TODO
           console.log("In newfriend socket event");
+
+          try {
+            var str = '<a href="#" class="list-group-item">'+ (data.user) +'</a>';
+            $(".MAIN .userList").prepend( str + '<br>');
+            var e = $(".HOME .userList .list-group-item").first();
+            e.hide().show(600);
+          } catch (e) {
+            console.log('error in realtime friend update. [index.hjs]');
+          }
+
         });
 
         socket.on('newcomment', function (data) {
           console.log(data);
-
-          $(".PROFILE ." + data.tweet).append( newComment( getNameOfId(data.user), data.content ) );
+          // test code removed from here (cluttered up writing comments).
         });
 
         socket.on('usersOnline', function(data) {

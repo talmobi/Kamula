@@ -1,6 +1,7 @@
 // adds dynamic jquery functionality to the client side page
 
 var userName = '';
+var un = '';
 var lastLoginState = false;
 var currentProfile = '';
 var userJson;
@@ -91,6 +92,7 @@ var isAuth = function(authed, failed) {
     authed(json);
     setName(json.user);
     userName = json.user;
+    un = json.user;
     $("#anonNav").hide();
     $("#authNav").show();
   })
@@ -382,7 +384,7 @@ pageInit = function() {
       fullUserList.push(val);
 
       console.log(val);
-      var str = '<a href="#" class="list-group-item">'+ (val.name || val.user) +'</a>';
+      var str = '<a href="#" class="list-group-item">'+ (val.user) +'</a>';
       $(".HOME .userList").append( str + '<br>');
       $(".HOME .userList a").last().click(function() {
         var p = this.text;
@@ -524,12 +526,13 @@ switchToLoginView = function() {
 
 // helper function
 var newComment = function(user, content) {
+    // fixed correct name in writing comment
         var comment = '<li class="media comment"> \
                       <a class="pull-left" href="#"> \
                         <img class="media-object" src="favicon.ico" alt="Favicon (Default)"> \
                       </a> \
                       <div class="media-body"> \
-                        <h4 class="media-heading">'+user+'</h4> \
+                        <h4 class="media-heading">'+ userName +'</h4> \
                         '+content+' \
                       </div> \
                     </li>';
@@ -550,7 +553,7 @@ var loadProfileTweetsAndComments = function(userName) {
     userName = currentProfile;
   }
 
-  $(".PROFILE tweetList").empty();
+  $(".PROFILE .tweetList").empty(); // fixed (missing dot [.])
 
   console.log("username: " + userName);
   // load profile tweets
@@ -683,7 +686,6 @@ switchToProfileOf = function(user) {
   //
   loadProfileTweetsAndComments(user);
   $(".PROFILE .profileName").text(user + "'s Tweets");
-
 
   console.log("Switching to profile of: " + user)
 
