@@ -3,6 +3,8 @@
 	*/
 
 
+var tools = require('../config/tools.js');
+
 module.exports = function(app, verify, mongoose, passport) {
 	//Lisää käyttäjän järjestelmään	Runkona lisättävä käyttäjä JSON-muodossa
 	app.post('/api/users', passport.authenticate('local-register'), function (req, res) {

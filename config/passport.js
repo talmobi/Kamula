@@ -3,7 +3,8 @@
 	*	http://passportjs.org/guide/configure/
 	*/
 
-var LocalStrategy = require('passport-local').Strategy;
+//var LocalStrategy = require('passport-local').Strategy;
+var LocalStrategy = require('passport-basic').Strategy;
 
 module.exports = function(passport, mongoose) {	// called from app.js
 	var User = mongoose.model('User');
