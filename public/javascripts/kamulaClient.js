@@ -301,7 +301,6 @@ init = function() {
       formFail(data);
     })
     .always(function() {
-
     })
   });
 

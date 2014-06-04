@@ -2,6 +2,10 @@
 	*	Do tests with SODA
 	*/
 
+	// TODO
+	// Switching to other test framework for ease of use (run automatically by node)
+	// maybe zombie.js
+
 var soda = require('soda');
 var assert = require('assert');
 var jq = require('jquery');
