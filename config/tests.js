@@ -8,23 +8,30 @@ var assert = require('assert');
 
 var browser = new ZombieBrowser();
 
+var tests = 0;
+
+/*
 browser.on('error', function(err) {
 	console.log(err);
 })
+*/
 
 browser
-	.visit('http://localhost:80/')
+	.visit('http://127.0.0.1/');
 
+/*
 	// register user
 	.then(function() { // promise
-		browser.fill('#myUsernameInput', 'TestUser')
-		browser.fill('#myFullNameInput', 'Terrible Muriel')
-		browser.fill('#myEmailInput', 'mail@mail.com')
-		browser.fill('#myPasswordInput', 'losenord')
-		.clickAndWait('#registerButton')
-		.assertTextPresent('Logout')
+		browser
+		.fill('#myUsernameInput', 'TestUser')
+		.fill('#myFullNameInput', 'Terrible Muriel')
+		.fill('#myEmailInput', 'mail@mail.com')
+		.fill('#myPasswordInput', 'losenord')
+		.pressButton('#registerButton')
+		.wait()
+		//.assertTextPresent('Logout')
 	})
-
+/*
 	// go to profile view
 	.then(function() {
 		browser.pressButton("#ProfileLink")
@@ -32,6 +39,7 @@ browser
 		browser.assertTextPresent('Kirjoita') // tweet form
 	})
 
+/*
 	// krijoita twiitti
 	browser.fill(".TwiitWritePanel input", 'Tweet Tweet 123456')
 	browser.pressButton(".TwiitWritePanel button")
@@ -96,11 +104,14 @@ browser
 	browser.pressButton("myLoginForm .loginButton") // login
 
 	browser.assertTextPresent("Register") // we should have failed to login
-
-	browser.testComplete()
-	browser.end(function (err) {
-		if (err) throw err;
-		console.log('Tests finished.');
+*/
+/*
+	.then(function() {
+		console.log("");
+		console.log("------------");
+		console.log("[" + tests + "] tests done!");
+		console.log("------------");
+		console.log("");
 	});
 
 

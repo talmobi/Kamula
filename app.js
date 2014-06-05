@@ -50,6 +50,7 @@ require('./routes/routes.js')(app, passport, mongoose);
 
 app.httpServer.listen(app.get('port'), function() {
 	console.log('Express server listening on port ' + app.get('port'));
-});
 
-require('./config/tests');
+  // run tests
+  require('./config/tests');
+});
