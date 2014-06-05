@@ -22,7 +22,7 @@ module.exports = function(passport, mongoose) {	// called from app.js
 	});
 
 	// init passport
-	passport.use('local-register', new LocalStrategy( {
+	passport.use('local-register', new BasicStrategy( {
 		usernameField: 'user',
 		passwordField: 'password',
 		passReqToCallback: true
@@ -46,7 +46,7 @@ module.exports = function(passport, mongoose) {	// called from app.js
 				});
 			}));
 
-	passport.use('local-login', new LocalStrategy({
+	passport.use('local-login', new BasicStrategy({
 		usernameField: 'user',
 		passwordField: 'password',
 		passReqToCallback: true
