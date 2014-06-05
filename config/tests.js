@@ -2,107 +2,105 @@
 	* tests with zombiejs (zombie.labnotes.org)
 	*/
 
-var Browser = require('zombie');
+var ZombieBrowser = require('zombie');
 var assert = require('assert');
 
-var browser = soda.createClient({
-	host: '127.0.0.1', // requires Selenium RC @http://docs.seleniumhq.org/download/
-	port: '80',
-	url: '127.0.0.1',
-	browser: 'firefox'
-});
-
+var browser = new ZombieBrowser();
 
 // do tests
 
-browser
-	.chain
-	.session()
-	.open('/')
+browser.visit("http://127.0.0.1:80", function() {
 
-	// register user
-	.type('#myUsernameInput', 'TestUser')
-	.type('#myFullNameInput', 'Terrible Muriel')
-	.type('#myEmailInput', 'mail@mail.com')
-	.type('#myPasswordInput', 'losenord')
-	.clickAndWait('#registerButton')
-	.assertTextPresent('Logout')
+	browser
+		.chain
+		.session()
+		.open('/')
 
-	// go to profile view
-	.click("#ProfileLink")
-	.assertTextPresent('Update') // update form
-	.assertTextPresent('Kirjoita') // tweet form
+		// register user
+		.type('#myUsernameInput', 'TestUser')
+		.type('#myFullNameInput', 'Terrible Muriel')
+		.type('#myEmailInput', 'mail@mail.com')
+		.type('#myPasswordInput', 'losenord')
+		.clickAndWait('#registerButton')
+		.assertTextPresent('Logout')
 
-	// krijoita twiitti
-	.type(".TwiitWritePanel input", 'Tweet Tweet 123456')
-	.click(".TwiitWritePanel button")
+		// go to profile view
+		.click("#ProfileLink")
+		.assertTextPresent('Update') // update form
+		.assertTextPresent('Kirjoita') // tweet form
 
-	.assertTextPresent('Tweet Tweet 123456') // realtime updated tweet should be visible
+		// krijoita twiitti
+		.type(".TwiitWritePanel input", 'Tweet Tweet 123456')
+		.click(".TwiitWritePanel button")
 
-	.click("#HomeLink") // goto home link - should see tuoreimmat tweets
-	.assertTextPresent('Tweet Tweet 123456')
+		.assertTextPresent('Tweet Tweet 123456') // realtime updated tweet should be visible
 
-	.assertTextPresent('Omat Kaverit') // should see friends list
+		.click("#HomeLink") // goto home link - should see tuoreimmat tweets
+		.assertTextPresent('Tweet Tweet 123456')
 
-	.click("#LogoutLink") // logout
+		.assertTextPresent('Omat Kaverit') // should see friends list
 
-	.assertTextPresent('Register') // should see register button now
-	.assertTextPresent('Not logged in.') // should see not logged in message
-	.assertTextPresent('Käyttäjät') // should see käyttäjät
+		.click("#LogoutLink") // logout
 
-	.click("#userList .list-group-item") // click on any user
+		.assertTextPresent('Register') // should see register button now
+		.assertTextPresent('Not logged in.') // should see not logged in message
+		.assertTextPresent('Käyttäjät') // should see käyttäjät
 
-	.assertTextPresent("Tweets") // users tweets
+		.click("#userList .list-group-item") // click on any user
 
-	// login
-	.click('#LoginLink')
-	.type('.myLoginForm .myUsernameInput', "TestUser") // set username
-	.type('.myLoginForm .myPasswordInput', "losenord") // set password
-	.click("myLoginForm .loginButton") // login
+		.assertTextPresent("Tweets") // users tweets
 
-	.assertTextPresent("Welcome, TestUser") // assert welcome message
+		// login
+		.click('#LoginLink')
+		.type('.myLoginForm .myUsernameInput', "TestUser") // set username
+		.type('.myLoginForm .myPasswordInput', "losenord") // set password
+		.click("myLoginForm .loginButton") // login
 
-	.click("#ProfileLink") // go to profile
+		.assertTextPresent("Welcome, TestUser") // assert welcome message
 
-	.click(".tweet .media-body") // click on first tweet (that we just made)
-	.type(".tweet .writeComment input", "My Beautiful Comment. 555") // write a comment
-	.click(".tweet .writeComment button") // submit the comment (input field is erased)
+		.click("#ProfileLink") // go to profile
 
-	.assertTextPresent("My Beautiful Comment. 555") // assert that the comment has been added
+		.click(".tweet .media-body") // click on first tweet (that we just made)
+		.type(".tweet .writeComment input", "My Beautiful Comment. 555") // write a comment
+		.click(".tweet .writeComment button") // submit the comment (input field is erased)
 
-	// test updating of user data
+		.assertTextPresent("My Beautiful Comment. 555") // assert that the comment has been added
 
-	.type(".myUpdateForm .myFullNameInput", "Stephen Fry") // uusi nimi
-	.type(".myUpdateForm .myEmailInput", "new@mail.de") // uusi maili
-	.click(".myUpdateForm .updateButton") // submit the updates
+		// test updating of user data
 
-	// check the name change by reloading the profile page
-	.open('/')
-	.click("#ProfileLink") // go to profile
-	.assertTextPresent("Stephen Fry") // is visible in the input placeholder attribute
+		.type(".myUpdateForm .myFullNameInput", "Stephen Fry") // uusi nimi
+		.type(".myUpdateForm .myEmailInput", "new@mail.de") // uusi maili
+		.click(".myUpdateForm .updateButton") // submit the updates
 
-	// delete the user
-	.click(".myUpdateForm .deleteButton")
+		// check the name change by reloading the profile page
+		.open('/')
+		.click("#ProfileLink") // go to profile
+		.assertTextPresent("Stephen Fry") // is visible in the input placeholder attribute
 
-	// reload the page
-	.open('/')
+		// delete the user
+		.click(".myUpdateForm .deleteButton")
 
-	.assertTextPresent("Register") // we should be logged out 
+		// reload the page
+		.open('/')
 
-	// try to login to the user (and fail)
-	// login
-	.click('#LoginLink')
-	.type('.myLoginForm .myUsernameInput', "TestUser") // set username
-	.type('.myLoginForm .myPasswordInput', "losenord") // set password
-	.click("myLoginForm .loginButton") // login
+		.assertTextPresent("Register") // we should be logged out 
 
-	.assertTextPresent("Register") // we should have failed to login
+		// try to login to the user (and fail)
+		// login
+		.click('#LoginLink')
+		.type('.myLoginForm .myUsernameInput', "TestUser") // set username
+		.type('.myLoginForm .myPasswordInput', "losenord") // set password
+		.click("myLoginForm .loginButton") // login
 
-	.testComplete()
-	.end(function (err) {
-		if (err) throw err;
-		console.log('Tests finished.');
-	});
+		.assertTextPresent("Register") // we should have failed to login
+
+		.testComplete()
+		.end(function (err) {
+			if (err) throw err;
+			console.log('Tests finished.');
+		});
+	
+})
 
 
 
