@@ -4,7 +4,7 @@
 	*/
 
 //var LocalStrategy = require('passport-local').Strategy;
-var LocalStrategy = require('passport-basic').Strategy;
+var BasicStrategy = require('passport-http').BasicStrategy;
 
 module.exports = function(passport, mongoose) {	// called from app.js
 	var User = mongoose.model('User');
