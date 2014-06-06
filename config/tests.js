@@ -6,11 +6,14 @@
 var ZombieBrowser = require('zombie');
 var assert = require('assert');
 
-
 var browser = new ZombieBrowser( {debug: true, runScripts: false} );
 
 var testCount = 0;
-var tests = 1;
+var failCount = 0;
+var tests = [
+];
+
+var testUser = 'ZombieTestUser4';
 
 browser.on('error', function(err) {
 	console.log("------------");
@@ -27,7 +30,7 @@ browser
 		return browser.clickLink('#RegisterLink'); // returns promise for fn then
 	})
 	.then(function() {
-		browser.fill('#myUsernameInput', 'TestUser');
+		browser.fill('#myUsernameInput', testUser);
 		browser.fill('#myFullNameInput', 'Terrible Muriel')
 		browser.fill('#myEmailInput', 'mail@mail.com')
 		browser.fill('#myPasswordInput', 'password');
@@ -35,6 +38,8 @@ browser
 	})
 	.then(function() {
 		assert.ok(browser.success);
+		if (browser.error)
+			failCount++;
 		testCount++;
 		return 'OK';
 	})
@@ -46,6 +51,8 @@ browser
 	})
 	.then(function() {
 		assert.ok(browser.success);
+		if (browser.error)
+			failCount++;
 		testCount++;
 		return 'OK';
 	})
@@ -58,6 +65,8 @@ browser
 	})
 	.then(function() {
 		assert.ok(browser.success);
+		if (browser.error)
+			failCount++;
 		testCount++;
 		return 'OK';
 	})
@@ -69,6 +78,8 @@ browser
 	})
 	.then(function() {
 		assert.ok(browser.success);
+		if (browser.error)
+			failCount++;
 		testCount++;
 		return 'OK';
 	})
@@ -80,6 +91,8 @@ browser
 	})
 	.then(function() {
 		assert.ok(browser.success);
+		if (browser.error)
+			failCount++;
 	})
 
 	// login
@@ -88,12 +101,14 @@ browser
 		return browser.clickLink('#LoginLink');
 	})
 	.then(function() {
-		browser.fill('.myLoginForm .myUsernameInput', 'TestUser');
+		browser.fill('.myLoginForm .myUsernameInput', testUser);
 		browser.fill('.myLoginForm .myPasswordInput', 'password');
 		return browser.pressButton('.myLoginForm .loginButton')
 	})
 	.then(function() {
 		assert.ok(browser.success);
+		if (browser.error)
+			failCount++;
 		testCount++;
 		return 'OK';
 	})
@@ -110,6 +125,8 @@ browser
 	})
 	.then(function() {
 		assert.ok(browser.success);
+		if (browser.error)
+			failCount++;
 		testCount++;
 		return 'OK';
 	})
@@ -121,6 +138,8 @@ browser
 	})
 	.then(function() {
 		assert.ok(browser.success);
+		if (browser.error)
+			failCount++;
 		testCount++;
 		return 'OK';
 	})
@@ -136,12 +155,14 @@ browser
 		return browser.clickLink('#LoginLink');
 	})
 	.then(function() {
-		browser.fill('.myLoginForm .myUsernameInput', 'TestUser');
+		browser.fill('.myLoginForm .myUsernameInput', testUser);
 		browser.fill('.myLoginForm .myPasswordInput', 'password');
 		return browser.pressButton('.myLoginForm .loginButton')
 	})
 	.then(function() {
 		assert.ok(browser.query('#LoginLink')); // not logged in
+		if (browser.error)
+			failCount++;
 		testCount++;
 		return 'OK';
 	})
@@ -149,7 +170,9 @@ browser
 	.then(function() {
 		console.log("");
 		console.log("++++++++++++++++++++");
-		console.log("[" + testCount + "] tests done!");
+		console.log("[" + testCount + "] tests done, ["+
+								 failCount + "] failed, ["+
+								 browser.errors.length +"] errors.");
 		console.log("++++++++++++++++++++");
 		console.log("");
 	});
