@@ -3,12 +3,11 @@
 	*	http://passportjs.org/guide/configure/
 	*/
 
-//var LocalStrategy = require('passport-local').Strategy;
+var LocalStrategy = require('passport-local').Strategy;
 var BasicStrategy = require('passport-http').BasicStrategy;
 
 module.exports = function(passport, mongoose) {	// called from app.js
 	var User = mongoose.model('User');
-
 	var tools = require('./tools');
 
 	passport.serializeUser(function(user, done) {
@@ -22,7 +21,7 @@ module.exports = function(passport, mongoose) {	// called from app.js
 	});
 
 	// init passport
-	passport.use('local-register', new BasicStrategy( {
+	passport.use('local-register', new LocalStrategy( {
 		usernameField: 'user',
 		passwordField: 'password',
 		passReqToCallback: true
@@ -46,7 +45,7 @@ module.exports = function(passport, mongoose) {	// called from app.js
 				});
 			}));
 
-	passport.use('local-login', new BasicStrategy({
+	passport.use('local-login', new LocalStrategy({
 		usernameField: 'user',
 		passwordField: 'password',
 		passReqToCallback: true
@@ -64,4 +63,21 @@ module.exports = function(passport, mongoose) {	// called from app.js
 					return done(null, user);
 				});
 			}));
-};
+
+
+passport.use(new BasicStrategy(
+	function(username, password, done) {
+		if (correctPassword(username, password)) {
+			return done(null, username);
+		}
+		return done(null, false);
+	}
+));
+
+function correctPassword(username, password) {
+	User.findOne( { lowercaseName: username.toLowerCase() }, function(err, user) {
+		return !user.locked && user && user.password === password;
+	});
+}
+
+}; // module.exports
