@@ -1,119 +1,161 @@
 /**
 	* tests with zombiejs (zombie.labnotes.org)
+	* http://zombie.labnotes.org/API
 	*/
 
 var ZombieBrowser = require('zombie');
 var assert = require('assert');
 
 
-var browser = new ZombieBrowser();
+var browser = new ZombieBrowser( {debug: true, runScripts: false} );
 
-var tests = 0;
+var testCount = 0;
+var tests = 1;
 
-/*
 browser.on('error', function(err) {
+	console.log("------------");
 	console.log(err);
+	console.log("------------");
 })
-*/
 
 browser
-	.visit('http://127.0.0.1/');
+	.visit('http://127.0.0.1/#')
 
-/*
-	// register user
-	.then(function() { // promise
-		browser
-		.fill('#myUsernameInput', 'TestUser')
-		.fill('#myFullNameInput', 'Terrible Muriel')
-		.fill('#myEmailInput', 'mail@mail.com')
-		.fill('#myPasswordInput', 'losenord')
-		.pressButton('#registerButton')
-		.wait()
-		//.assertTextPresent('Logout')
-	})
-/*
-	// go to profile view
+	// Register user
 	.then(function() {
-		browser.pressButton("#ProfileLink")
-		browser.assertTextPresent('Update') // update form
-		browser.assertTextPresent('Kirjoita') // tweet form
+		console.log("+++ Register Test +++");
+		return browser.clickLink('#RegisterLink'); // returns promise for fn then
+	})
+	.then(function() {
+		browser.fill('#myUsernameInput', 'TestUser');
+		browser.fill('#myFullNameInput', 'Terrible Muriel')
+		browser.fill('#myEmailInput', 'mail@mail.com')
+		browser.fill('#myPasswordInput', 'password');
+		return browser.pressButton('#registerButton');
+	})
+	.then(function() {
+		assert.ok(browser.success);
+		testCount++;
+		return 'OK';
 	})
 
-/*
-	// krijoita twiitti
-	browser.fill(".TwiitWritePanel input", 'Tweet Tweet 123456')
-	browser.pressButton(".TwiitWritePanel button")
+	// profile view
+	.then(function() {
+		return browser.clickLink('#ProfileLink');
+	})
+	.then(function() {
+		assert.ok(browser.success);
+		testCount++;
+		return 'OK';
+	})
 
-	browser.assertTextPresent('Tweet Tweet 123456') // realtime updated tweet should be visible
+	// write tweet
+	.then(function() {
+		browser.fill('.TwiitWritePanel input', 'Tweet Tweet 123456');
+		return browser.pressButton('.TwiitWritePanel button');
+	})
+	.then(function() {
+		assert.ok(browser.success);
+		testCount++;
+		return 'OK';
+	})
 
-	browser.pressButton("#HomeLink") // goto home link - should see tuoreimmat tweets
-	browser.assertTextPresent('Tweet Tweet 123456')
+	// Home link test
+	.then(function() {
+		return browser.clickLink('#HomeLink');
+	})
+	.then(function() {
+		assert.ok(browser.success);
+		assert.equal(browser.text('#users H3'), 'Omat Kaverit');
+		testCount++;
+		return 'OK';
+	})
 
-	browser.assertTextPresent('Omat Kaverit') // should see friends list
-
-	browser.pressButton("#LogoutLink") // logout
-
-	browser.assertTextPresent('Register') // should see register button now
-	browser.assertTextPresent('Not logged in.') // should see not logged in message
-	browser.assertTextPresent('Käyttäjät') // should see käyttäjät
-
-	browser.pressButton("#userList .list-group-item") // click on any user
-
-	browser.assertTextPresent("Tweets") // users tweets
+	// logout
+	.then(function() {
+		return browser.clickLink('#LogoutLink');
+	})
+	.then(function() {
+		assert.ok(browser.success);
+	})
 
 	// login
-	browser.pressButton('#LoginLink')
-	browser.fill('.myLoginForm .myUsernameInput', "TestUser") // set username
-	browser.fill('.myLoginForm .myPasswordInput', "losenord") // set password
-	browser.pressButton("myLoginForm .loginButton") // login
+	.then(function() {
+		return browser.clickLink('#LoginLink');
+	})
+	.then(function() {
+		browser.fill('.myLoginForm .myUsernameInput', 'TestUser');
+		browser.fill('.myLoginForm .myPasswordInput', 'password');
+		return browser.pressButton('.myLoginForm .loginButton')
+	})
+	.then(function() {
+		assert.ok('browser.success');
+		testCount++;
+		return 'OK';
+	})
 
-	browser.assertTextPresent("Welcome, TestUser") // assert welcome message
-
-	browser.pressButton("#ProfileLink") // go to profile
-
-	browser.pressButton(".tweet .media-body") // click on first tweet (that we just made)
-	browser.fill(".tweet .writeComment input", "My Beautiful Comment. 555") // write a comment
-	browser.pressButton(".tweet .writeComment button") // submit the comment (input field is erased)
-
-	browser.assertTextPresent("My Beautiful Comment. 555") // assert that the comment has been added
+	// write comment
+	.then(function() {
+		return browser.clickLink('#ProfileLink');
+	})
+	.then(function() {
+		return browser.clickLink('.tweet .media-body');
+	})
+	.then(function() {
+		browser.fill('.tweet .writeComment input', 'My Beautiful Comment. 555');
+		return browser.pressButton('.tweet .writeComment button');
+	})
+	.then(function() {
+		asssert.ok('browser.success');
+		testCount++;
+		return 'OK';
+	})
 
 	// test updating of user data
+	
 
-	browser.fill(".myUpdateForm .myFullNameInput", "Stephen Fry") // uusi nimi
-	browser.fill(".myUpdateForm .myEmailInput", "new@mail.de") // uusi maili
-	browser.pressButton(".myUpdateForm .updateButton") // submit the updates
-
-	// check the name change by reloading the profile page
-	browser.open('/')
-	browser.pressButton("#ProfileLink") // go to profile
-	browser.assertTextPresent("Stephen Fry") // is visible in the input placeholder attribute
-
-	// delete the user
-	browser.pressButton(".myUpdateForm .deleteButton")
-
-	// reload the page
-	browser.open('/')
-
-	browser.assertTextPresent("Register") // we should be logged out 
-
-	// try to login to the user (and fail)
-	// login
-	browser.pressButton('#LoginLink')
-	browser.fill('.myLoginForm .myUsernameInput', "TestUser") // set username
-	browser.fill('.myLoginForm .myPasswordInput', "losenord") // set password
-	browser.pressButton("myLoginForm .loginButton") // login
-
-	browser.assertTextPresent("Register") // we should have failed to login
-*/
-/*
 	.then(function() {
 		console.log("");
-		console.log("------------");
-		console.log("[" + tests + "] tests done!");
-		console.log("------------");
+		console.log("++++++++++++++++++++");
+		console.log("[" + testCount + "] tests done!");
+		console.log("++++++++++++++++++++");
 		console.log("");
 	});
 
+/*
+	// test updating of user data
+
+	.type(".myUpdateForm .myFullNameInput", "Stephen Fry") // uusi nimi
+	.type(".myUpdateForm .myEmailInput", "new@mail.de") // uusi maili
+	.click(".myUpdateForm .updateButton") // submit the updates
+
+	// check the name change by reloading the profile page
+	.open('/')
+	.click("#ProfileLink") // go to profile
+	.assertTextPresent("Stephen Fry") // is visible in the input placeholder attribute
+
+	// delete the user
+	.click(".myUpdateForm .deleteButton")
+
+	// reload the page
+	.open('/')
+
+	.assertTextPresent("Register") // we should be logged out 
+
+	// try to login to the user (and fail)
+	// login
+	.click('#LoginLink')
+	.type('.myLoginForm .myUsernameInput', "TestUser") // set username
+	.type('.myLoginForm .myPasswordInput', "losenord") // set password
+	.click("myLoginForm .loginButton") // login
+
+	.assertTextPresent("Register") // we should have failed to login
+
+	.testComplete()
+	.end(function (err) {
+		if (err) throw err;
+		console.log('Tests finished.');
+	});
 
 
 /**

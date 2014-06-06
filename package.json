@@ -15,7 +15,6 @@
     "passport-http": "^0.2.2",
     "passport-local": "latest",
     "socket.io": "*",
-    "soda": "latest",
     "zombie": "^2.0.0-alpha31"
   }
 }
