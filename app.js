@@ -17,7 +17,7 @@ app.httpServer = http.createServer(app);
 var io = app.io = module.exports = require('./config/sockets');
 
 // set explicit httpServer for socket.io (required since Express 3)
-app.set('port', process.env.PORT || 80);
+app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs'); // hogan
 app.use(express.favicon(path.join(__dirname, 'favicon.ico')));
@@ -52,5 +52,5 @@ app.httpServer.listen(app.get('port'), function() {
 	console.log('Express server listening on port ' + app.get('port'));
 
   // run tests
-  require('./config/tests');
+  //require('./config/tests');
 });

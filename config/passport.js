@@ -67,16 +67,41 @@ module.exports = function(passport, mongoose) {	// called from app.js
 
 passport.use(new BasicStrategy(
 	function(username, password, done) {
-		if (correctPassword(username, password)) {
+		if (correctPassword(username, password, function() {
+			console.log('successful basic login');
 			return done(null, username);
-		}
-		return done(null, false);
+		}, function(msg) {
+			console.log(msg);
+			console.log(username + ':' + password);
+			return done(null, false);
+		}));
 	}
 ));
 
-function correctPassword(username, password) {
+function correctPassword(username, password, next, fail) {
+	console.log('In correctPassword function!');
 	User.findOne( { lowercaseName: username.toLowerCase() }, function(err, user) {
-		return !user.locked && user && user.password === password;
+		if (err) {
+			console.log('error!');
+			console.log(err);
+			return false;
+		}
+		//return user && user.password === password;
+		var msg = '';
+
+		if (user.locked) {
+			msg += 'user locked! (deleted)';
+			return next();
+		}
+			
+		if (!user)
+			msg += ' | no such user';
+		if (user.password !== password)
+			msg += ' | wrong password';
+		if (user && !user.locked && user.password === password)
+			return next();
+		else
+			return fail(msg);
 	});
 }
 

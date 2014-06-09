@@ -4,6 +4,7 @@
 
 
 var tools = require('../config/tools.js');
+var io = require('../config/sockets');
 
 module.exports = function(app, verify, mongoose, passport) {
 	//Lisää käyttäjän järjestelmään	Runkona lisättävä käyttäjä JSON-muodossa
@@ -121,33 +122,36 @@ module.exports = function(app, verify, mongoose, passport) {
 	app.delete('/api/users/:user', verify, function(req, res) {
 		var json = req.body;
 
-		if (json.user.toLowerCase() !== req.user.lowercaseName) {
-			console.log("in app.delete API - error");
-			res.send(404);
-			return;
-		}
+		var user = json.user || req.user;
 
-		mongoose.model('User').findOne({ lowercaseName: json.user.toLowerCase() }, function(err, doc) {
+		console.log("user: " + user);
+
+		mongoose.model('User').findOne({ lowercaseName: user.toLowerCase() }, function(err, doc) {
 			if (err) {
 				console.log(err);
 			}
 
 			if (doc) {
-					mongoose.model('User').update( {_id: doc._id}, {locked: true}, {multi:false}, function (err) {
-						if (err) {
-							res.send(404);
-							throw err;
-							return;
-						}
+				if (doc.locked) {
+					res.send(404, 'Kayttaja on jo lukittu (poistettu).');
+					return;
+				}
 
-						req.logout();
-						res.send(200, {message: "User successfully deleted."});
-					});
-					
-					//mongoose.model('User').remove( { lowercaseName: json.user.toLowerCase() } );
+				mongoose.model('User').update( {_id: doc._id}, {locked: true}, {multi:false}, function (err) {
+					if (err) {
+						res.send(404, 'update error');
+						throw err;
+						return;
+					}
+
+					req.logout();
+					res.send(200, {message: "User successfully deleted."});
+				});
+				
+				//mongoose.model('User').remove( { lowercaseName: json.user.toLowerCase() } );
 			} else {
 				// ei ole olemassa
-				res.send(404);
+				res.send(404, 'Kayttaja ei ole olemassa.');
 			}
 		});
 	});

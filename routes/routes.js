@@ -17,12 +17,17 @@ module.exports = function(app, passport, mongoose) {
 	// get tools for checking and inserting data
 	var tools = require('../config/tools');
 
+	var basicAuth = passport.authenticate('basic', {session: false});
+
 	// verification middleware
 	var verify = function(req, res, next) {
-		if (req.isAuthenticated()) {
+		if (req.user) {
 			return next();
 		} else {
-			res.send(403, "Unauthorized!");
+			console.log("basicAuth:issa");
+			basicAuth(req, res, next);
+			//console.log(req);
+			//res.send(403, "Unauthorized!");
 		}
 	}
 
